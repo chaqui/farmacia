@@ -1,5 +1,7 @@
 package com.farmacia.models;
 
+import com.farmacia.dto.ProveedorDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,7 +34,19 @@ public class Proveedor {
     @Column
     private String contacto;
 
-    @Column
-    private String estado;
+    public Proveedor(ProveedorDto.POST proveedor){
+        this.nombre = proveedor.nombre;
+        this.direccion = proveedor.direccion;
+        this.telefono = proveedor.telefono;
+        this.email = proveedor.email;
+        this.contacto = proveedor.contacto;
+    }
+
+    public void update(ProveedorDto.PUT proveedor){
+        this.nombre = proveedor.nombre;
+        this.direccion = proveedor.direccion;
+        this.telefono = proveedor.telefono;
+    }
+
 }
 

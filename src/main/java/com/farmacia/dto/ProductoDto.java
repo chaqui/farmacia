@@ -14,33 +14,28 @@ public class ProductoDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Post{
-        private String nombre;
-        private double precio;
-        private String descripcion;
-        private int stock;
-        private String categoriaId;
+        protected String nombre;
+        protected double precio;
+        protected String descripcion;
+        protected int stock;
+        protected String categoria;
+        protected Long idProveedor;
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Get{
+    public static class Get extends Post{ 
         private Long id;
-        private String nombre;
-        private double precio;
-        private String descripcion;
-        private int stock;
-        private String categoria;
         private String image;
 
-
-        public Get(Producto producto){
+        public Get(Producto producto, Integer stock){
             this.id = producto.getId();
             this.nombre = producto.getNombre();
             this.precio = producto.getPrecio();
             this.descripcion = producto.getDescripcion();
-            this.stock = producto.getStock();
+            this.stock = stock;
             this.categoria = producto.getCategoria();
             this.image = producto.getImage();
         }

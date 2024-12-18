@@ -2,6 +2,8 @@ package com.farmacia.models;
 
 import java.util.Date;
 
+import com.farmacia.dto.CompraDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +30,10 @@ public class Compra {
     @Column
     private Date fecha;
 
-    @Column
-    private double total;
+
+
+    public Compra(CompraDto.POST compraDto, Proveedor proveedor) {
+        this.proveedor = proveedor;
+
+    }
 }
