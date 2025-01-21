@@ -68,4 +68,8 @@ public class ProveedorService {
         productoService.crearProducto(productoDto, proveedor);
     }
 
+    public void eliminarProveedor(Long id) {
+        proveedorRepository.deleteById(id);
+    }
+
 }
