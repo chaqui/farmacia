@@ -64,15 +64,31 @@ public class ProveedorService {
         return proveedorRepository.findAll();
     }
 
+    /**
+     * Agrega un producto a un proveedor
+     * @param id id del proveedor
+     * @param productoDto datos del producto
+     * @throws HttpException si el proveedor no existe
+     */
     public void agregarProducto(Long id, Post productoDto) throws HttpException {
         Proveedor proveedor = this.obtenerProveedor(id);
         productoService.crearProducto(productoDto, proveedor);
     }
 
+    /**
+     * Elimina un proveedor
+     * @param id id del proveedor
+     */
     public void eliminarProveedor(Long id) {
         proveedorRepository.deleteById(id);
     }
 
+    /**
+     * Obtiene los productos de un proveedor
+     * @param id id del proveedor
+     * @return lista de productos
+     * @throws HttpException si el proveedor no existe
+     */
     public List<ProductoDto.Get> obtenerProductos(Long id) throws HttpException {
         Proveedor proveedor = this.obtenerProveedor(id);
         return productoService.agregarStock(proveedor.getProductos());
