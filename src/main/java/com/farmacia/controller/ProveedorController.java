@@ -36,9 +36,21 @@ public class ProveedorController {
         return proveedorService.obtenerProveedores().stream().map(ProveedorDto.GET::new).toList();
     }
 
+    @GetMapping
+    @RequestMapping("/{id}")
+    public ProveedorDto.GET obtenerProveedor(@PathVariable Long id) throws HttpException {
+        return new ProveedorDto.GET(proveedorService.obtenerProveedor(id));
+    }
+
     @PostMapping("/{id}/productos")
     public void agregarProducto(@PathVariable Long id, @RequestBody ProductoDto.Post productoDto) throws HttpException {
         proveedorService.agregarProducto(id, productoDto);
+    }
+
+    @GetMapping("/{id}/productos")
+    public List<ProductoDto.Get> obtenerProductos(@PathVariable Long id) throws HttpException {
+        return proveedorService.obtenerProductos(id);
+
     }
 
     @DeleteMapping("/{id}")

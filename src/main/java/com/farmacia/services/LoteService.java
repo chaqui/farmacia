@@ -21,7 +21,7 @@ public class LoteService {
         loteRepository.save(new Lote(loteDto, producto));
     }
 
-    public List<Lote> obtenerLotes(Integer idProducto) {
+    public List<Lote> obtenerLotes(Long idProducto) {
         return loteRepository.findByProductoId(idProducto);
     }
 

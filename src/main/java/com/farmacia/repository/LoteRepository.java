@@ -11,7 +11,7 @@ import com.farmacia.models.Lote;
 public interface LoteRepository extends JpaRepository<Lote, Long> {
 
 
-    public List<Lote> findByProductoId(Integer idProducto);
+    public List<Lote> findByProductoId(Long idProducto);
 
     public Lote findByProductoIdAndLote(Integer idProducto, String lote);
 

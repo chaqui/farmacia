@@ -27,11 +27,19 @@ public class ProductoService {
     }
 
     public List<ProductoDto.Get> obtenerProductos() {
-        List<Producto> productos = productoRepository.findAll();
+        return this.agregarStock(productoRepository.findAll());
+    }
+
+    private Integer obtenerStock(Long id) {
+
+        return loteService.obtenerLotes(id).stream()
+                .mapToInt(lote -> lote.getCantidad()).sum();
+    }
+
+    public List<ProductoDto.Get> agregarStock(List<Producto> productos) {
         return productos.stream().map(
                 producto -> {
-                    Integer stock = loteService.obtenerLotes(producto.getId().intValue()).stream()
-                            .mapToInt(lote -> lote.getCantidad()).sum();
+                    Integer stock = this.obtenerStock(producto.getId());
                     return new ProductoDto.Get(producto, stock);
                 }).collect(Collectors.toList());
     }
@@ -44,7 +52,7 @@ public class ProductoService {
         return producto;
     }
 
-    public void agregarNuevoLote(Long idProducto, LoteDto.POST loteDto ) throws HttpException{
+    public void agregarNuevoLote(Long idProducto, LoteDto.POST loteDto) throws HttpException {
         Producto producto = this.obtenerProducto(idProducto);
         this.loteService.agregarNuevoLote(loteDto, producto);
     }

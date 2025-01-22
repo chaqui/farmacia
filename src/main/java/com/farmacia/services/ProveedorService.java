@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.farmacia.dto.ProductoDto.Post;
+import com.farmacia.dto.ProductoDto;
 import com.farmacia.dto.ProveedorDto;
 import com.farmacia.exception.HttpException;
 import com.farmacia.models.Proveedor;
@@ -70,6 +71,11 @@ public class ProveedorService {
 
     public void eliminarProveedor(Long id) {
         proveedorRepository.deleteById(id);
+    }
+
+    public List<ProductoDto.Get> obtenerProductos(Long id) throws HttpException {
+        Proveedor proveedor = this.obtenerProveedor(id);
+        return productoService.agregarStock(proveedor.getProductos());
     }
 
 }
