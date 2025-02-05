@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.farmacia.dto.CompraDto;
+import com.farmacia.dto.LoteDto;
 import com.farmacia.exception.HttpException;
 import com.farmacia.models.Compra;
+import com.farmacia.models.Lote;
+import com.farmacia.models.Producto;
 import com.farmacia.models.Proveedor;
 import com.farmacia.repository.CompraRepository;
 
@@ -25,22 +28,34 @@ public class CompraService {
     @Autowired
     private ProveedorService proveedorService;
 
+    @Autowired
+    private DetalleCompraService detalleCompraService;
+
+    @Autowired
+    private LoteService loteService;
+
     /**
      * Verifica si el proveedor y el producto existen, y crea una compra
+     * 
      * @param compraDto datos de la compra
      * @throws HttpException si existe un error al crear la compra
      */
     @Transactional(rollbackOn = Exception.class)
     public void crearCompra(CompraDto.POST compraDto) throws HttpException {
         Proveedor proveedor = proveedorService.obtenerProveedor(compraDto.getIdProveedor());
-        productoService.agregarNuevoLote(compraDto.getIdProducto(), compraDto);
         Compra compra = new Compra(compraDto, proveedor);
         compraRepository.save(compra);
+        for (LoteDto.POST loteDto : compraDto.getLotes()){
+            Producto producto = productoService.obtenerProducto(loteDto.getIdProducto());
+            Lote lote = loteService.crearLote(loteDto, producto);
+            detalleCompraService.crearDetalleCompra(compra, lote);
+        }
 
     }
 
     /**
      * Obtiene todas las compras
+     * 
      * @return lista de compras
      */
     public List<Compra> obtenerCompras() {

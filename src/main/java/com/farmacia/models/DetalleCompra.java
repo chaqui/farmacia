@@ -1,12 +1,14 @@
 package com.farmacia.models;
 
-import jakarta.persistence.Column;
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,14 +23,14 @@ public class DetalleCompra {
     @ManyToOne
     @JoinColumn(name = "compra_id", nullable = false)
     private Compra compra;
+
     @ManyToOne
-    @JoinColumn(name = "producto_id", nullable = false)
-    private Producto producto;
+    @JoinColumn(name = "lote_id", nullable = false)
+    private Lote lote;
 
-    @Column
-    private int cantidad;
+    public DetalleCompra(Compra compra, Lote lote) {
+        this.compra = compra;
+        this.lote = lote;
 
-    public double getTotal() {
-        return producto.getPrecio() * cantidad;
     }
 }

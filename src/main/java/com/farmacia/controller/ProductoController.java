@@ -22,4 +22,5 @@ public class ProductoController {
     public List<ProductoDto.Get> obtenerProductos() {
         return productoService.obtenerProductos();
     }
+    
 }

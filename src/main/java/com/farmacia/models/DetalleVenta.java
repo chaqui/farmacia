@@ -19,16 +19,11 @@ public class DetalleVenta {
     private Integer id;
 
     private Integer cantidad;
-    @ManyToOne
-    @JoinColumn(name = "producto_id", nullable = false)
-    private Producto producto;
 
     @ManyToOne
     @JoinColumn(name = "venta_id", nullable = false)
     private Venta venta;
 
-    public double getTotal() {
-        return cantidad * producto.getPrecio();
-    }
+
 
 }

@@ -3,6 +3,7 @@ package com.farmacia.models;
 
 
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
 
@@ -15,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -34,9 +36,6 @@ public class Producto {
     private String descripcion;
 
     @Column
-    private double precio;
-
-    @Column
     private String categoria;
 
     @Column
@@ -49,11 +48,17 @@ public class Producto {
     @JoinColumn(name = "proveedor_id", nullable = false)
     private Proveedor proveedor;
 
+    @OneToMany(mappedBy = "producto")
+    private List<Lote> lote;
+
     public Producto(ProductoDto.Post dto, Proveedor proveedor) {
         this.nombre = dto.getNombre();
-        this.precio = dto.getPrecio();
         this.descripcion = dto.getDescripcion();
         this.categoria = dto.getCategoria();
         this.proveedor = proveedor;
+    }
+
+    public int getCantidad(){
+        return this.lote.stream().mapToInt(lote -> lote.getCantidad()).sum();
     }
 }

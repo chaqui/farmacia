@@ -1,6 +1,7 @@
 package com.farmacia.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -91,7 +92,7 @@ public class ProveedorService {
      */
     public List<ProductoDto.Get> obtenerProductos(Long id) throws HttpException {
         Proveedor proveedor = this.obtenerProveedor(id);
-        return productoService.agregarStock(proveedor.getProductos());
+        return proveedor.getProductos().stream().map(ProductoDto.Get::new).collect(Collectors.toList());
     }
 
 }

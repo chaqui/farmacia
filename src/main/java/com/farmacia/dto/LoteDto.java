@@ -14,10 +14,19 @@ public class LoteDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class POST{
-        private Date fechaVencimiento;
-        private int cantidad;
-        private Float precio;
-        private String lote;
+        protected Date fechaVencimiento;
+        protected int cantidad;
+        protected Float precio;
+        protected String lote;
+        protected Long idProducto;
     }
+    
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class GET extends POST{
+        private Long id;
+    }
+    
 
 }

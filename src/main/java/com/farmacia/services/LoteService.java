@@ -16,9 +16,9 @@ public class LoteService {
     @Autowired
     private LoteRepository loteRepository;
 
-    public void crearLote(LoteDto.POST loteDto, Producto producto) {
+    public Lote crearLote(LoteDto.POST loteDto, Producto producto) {
 
-        loteRepository.save(new Lote(loteDto, producto));
+        return loteRepository.save(new Lote(loteDto, producto));
     }
 
     public List<Lote> obtenerLotes(Long idProducto) {

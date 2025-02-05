@@ -15,9 +15,7 @@ public class ProductoDto {
     @AllArgsConstructor
     public static class Post{
         protected String nombre;
-        protected double precio;
         protected String descripcion;
-        protected int stock;
         protected String categoria;
         protected Long idProveedor;
     }
@@ -29,13 +27,12 @@ public class ProductoDto {
     public static class Get extends Post{ 
         private Long id;
         private String image;
-
-        public Get(Producto producto, Integer stock){
+        private Integer stock;
+        public Get(Producto producto){
             this.id = producto.getId();
             this.nombre = producto.getNombre();
-            this.precio = producto.getPrecio();
             this.descripcion = producto.getDescripcion();
-            this.stock = stock;
+            this.stock =producto.getCantidad();
             this.categoria = producto.getCategoria();
             this.image = producto.getImage();
         }
