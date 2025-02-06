@@ -33,7 +33,7 @@ public class ProveedorDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class GET extends POST {
-        public Integer id;
+        public Long id;
 
         public GET(Proveedor proveedor) {
             this.id = proveedor.getId();

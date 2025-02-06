@@ -1,22 +1,31 @@
 package com.farmacia.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.farmacia.dto.CompraDto;
-import com.farmacia.exception.HttpException;
+import com.farmacia.dto.DetalleDTO;
 import com.farmacia.services.CompraService;
+import com.farmacia.exception.HttpException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@RestController
 @RequestMapping("/compras")
+@Slf4j
 public class CompraController {
 
     @Autowired
     private CompraService compraService;
 
-
     /**
      * Crea una compra
+     * 
      * @param compraDto datos de la compra
      * @throws HttpException si existe un error al crear la compra
      */
@@ -25,6 +34,15 @@ public class CompraController {
         this.compraService.crearCompra(compraDto);
     }
 
+    @GetMapping
+    public List<CompraDto.GET> obtenerCompras() {
+        log.info("Obteniendo compras");
+        return this.compraService.obtenerCompras().stream().map(CompraDto.GET::new).toList();
+    }
 
+    @GetMapping("/{id}/detalles")
+    public List<DetalleDTO.GET> obtenerDetalle(Long id) {
+        return compraService.obtenerDetalle(id).stream().map(DetalleDTO.GET::new).toList();
+    }
 
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.farmacia.dto.LoteDto;
+import com.farmacia.exception.HttpException;
 import com.farmacia.models.Lote;
 import com.farmacia.models.Producto;
 import com.farmacia.repository.LoteRepository;
@@ -16,7 +17,7 @@ public class LoteService {
     @Autowired
     private LoteRepository loteRepository;
 
-    public Lote crearLote(LoteDto.POST loteDto, Producto producto) {
+    private Lote crearLote(LoteDto.POST loteDto, Producto producto) {
 
         return loteRepository.save(new Lote(loteDto, producto));
     }
@@ -33,13 +34,17 @@ public class LoteService {
         return loteRepository.findByProductoIdAndLote(idProducto, lote);
     }
 
-    public void agregarNuevoLote(LoteDto.POST loteDto, Producto producto) {
+    public Lote agregarNuevoLote(LoteDto.POST loteDto, Producto producto) throws HttpException {
         Lote lote = this.obtenerLote(producto.getId().intValue(), loteDto.getLote());
         if (lote == null) {
-            this.crearLote(loteDto, producto);
+            return this.crearLote(loteDto, producto);
         } else {
+            if (loteDto.getFechaVencimiento() != lote.getFechaVencimiento()) {
+                throw new HttpException("El lote a agregar ya existe con una fecha de vencimiento diferente", 400);
+            }
             lote.setCantidad(lote.getCantidad() + loteDto.getCantidad());
             loteRepository.save(lote);
+            return lote;
         }
     }
 

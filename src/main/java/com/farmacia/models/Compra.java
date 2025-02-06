@@ -31,13 +31,20 @@ public class Compra {
 
     @Column
     private Date fecha;
-    
+
     @OneToMany(mappedBy = "compra")
     private List<DetalleCompra> detalleCompra;
-
 
     public Compra(CompraDto.POST compraDto, Proveedor proveedor) {
         this.proveedor = proveedor;
 
+    }
+
+    public Float getTotal() {
+        Float total = 0f;
+        for (DetalleCompra detalle : detalleCompra) {
+            total += detalle.getSubtotal();
+        }
+        return total;
     }
 }

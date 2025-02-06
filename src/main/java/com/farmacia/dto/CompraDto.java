@@ -1,6 +1,5 @@
 package com.farmacia.dto;
 
-
 import java.util.Date;
 import java.util.List;
 
@@ -18,27 +17,26 @@ public class CompraDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class POST {
-        private Long idProveedor;
-        private Date fecha;
+        protected Long idProveedor;
+        protected Date fecha;
         private List<LoteDto.POST> lotes;
-    
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class GET{
+    public static class GET extends POST {
         private Long id;
         private String proveedor;
-        private Date fecha;
+        private Float total;
 
-        public GET(Compra compra){
+        public GET(Compra compra) {
             this.id = compra.getId();
             this.proveedor = compra.getProveedor().getNombre();
             this.fecha = compra.getFecha();
-          
+            this.total = compra.getTotal();
+            this.idProveedor = compra.getProveedor().getId();
         }
     }
-
 
 }

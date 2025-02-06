@@ -2,6 +2,8 @@ package com.farmacia.dto;
 
 import java.util.Date;
 
+import com.farmacia.models.Lote;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +28,14 @@ public class LoteDto {
     @NoArgsConstructor
     public static class GET extends POST{
         private Long id;
+
+        public GET(Lote lote){
+            this.fechaVencimiento = lote.getFechaVencimiento();
+            this.cantidad = lote.getCantidad();
+            this.precio = lote.getPrecio();
+            this.lote = lote.getLote();
+            this.idProducto = lote.getProducto().getId();
+        }
     }
     
 

@@ -29,6 +29,4 @@ public class Venta {
     private Cliente cliente;
     private Long total;
 
-    
-
 }

@@ -9,6 +9,7 @@ import com.farmacia.dto.CompraDto;
 import com.farmacia.dto.LoteDto;
 import com.farmacia.exception.HttpException;
 import com.farmacia.models.Compra;
+import com.farmacia.models.DetalleCompra;
 import com.farmacia.models.Lote;
 import com.farmacia.models.Producto;
 import com.farmacia.models.Proveedor;
@@ -45,10 +46,10 @@ public class CompraService {
         Proveedor proveedor = proveedorService.obtenerProveedor(compraDto.getIdProveedor());
         Compra compra = new Compra(compraDto, proveedor);
         compraRepository.save(compra);
-        for (LoteDto.POST loteDto : compraDto.getLotes()){
+        for (LoteDto.POST loteDto : compraDto.getLotes()) {
             Producto producto = productoService.obtenerProducto(loteDto.getIdProducto());
-            Lote lote = loteService.crearLote(loteDto, producto);
-            detalleCompraService.crearDetalleCompra(compra, lote);
+            Lote lote = loteService.agregarNuevoLote(loteDto, producto);
+            detalleCompraService.crearDetalleCompra(compra, lote, loteDto.getCantidad());
         }
 
     }
@@ -60,6 +61,10 @@ public class CompraService {
      */
     public List<Compra> obtenerCompras() {
         return compraRepository.findAll();
+    }
+
+    public List<DetalleCompra> obtenerDetalle(Long id) {
+        return compraRepository.findById(id).get().getDetalleCompra();
     }
 
 }

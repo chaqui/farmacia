@@ -33,7 +33,7 @@ public class ProductoService {
     public Producto obtenerProducto(Long id) throws HttpException {
         Producto producto = productoRepository.findById(id).orElse(null);
         if (producto == null) {
-            throw new HttpException("Producto no encontrado");
+            throw new HttpException("Producto no encontrado",404);
         }
         return producto;
     }

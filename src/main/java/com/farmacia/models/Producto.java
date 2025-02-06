@@ -1,11 +1,7 @@
 package com.farmacia.models;
 
-
-
 import java.util.Date;
 import java.util.List;
-
-import org.hibernate.annotations.ForeignKey;
 
 import com.farmacia.dto.ProductoDto;
 
@@ -39,8 +35,8 @@ public class Producto {
     private String categoria;
 
     @Column
-    private String image; 
-    
+    private String image;
+
     @Column
     private Date fechaVencimiento;
 
@@ -58,7 +54,7 @@ public class Producto {
         this.proveedor = proveedor;
     }
 
-    public int getCantidad(){
+    public int getCantidad() {
         return this.lote.stream().mapToInt(lote -> lote.getCantidad()).sum();
     }
 }
