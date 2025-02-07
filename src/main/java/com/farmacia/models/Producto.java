@@ -45,7 +45,7 @@ public class Producto {
     private Proveedor proveedor;
 
     @OneToMany(mappedBy = "producto")
-    private List<Lote> lote;
+    private List<Lote> lotes;
 
     public Producto(ProductoDto.Post dto, Proveedor proveedor) {
         this.nombre = dto.getNombre();
@@ -55,6 +55,6 @@ public class Producto {
     }
 
     public int getCantidad() {
-        return this.lote.stream().mapToInt(lote -> lote.getCantidad()).sum();
+        return this.lotes.stream().mapToInt(lote -> lote.getCantidad()).sum();
     }
 }

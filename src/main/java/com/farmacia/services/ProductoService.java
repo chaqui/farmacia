@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.farmacia.dto.LoteDto;
 import com.farmacia.dto.ProductoDto;
 import com.farmacia.exception.HttpException;
+import com.farmacia.models.Lote;
 import com.farmacia.models.Producto;
 import com.farmacia.models.Proveedor;
 import com.farmacia.repository.ProductoRepository;
@@ -38,8 +39,8 @@ public class ProductoService {
         return producto;
     }
 
-    public void agregarNuevoLote(Long idProducto, LoteDto.POST loteDto) throws HttpException {
-        Producto producto = this.obtenerProducto(idProducto);
-        this.loteService.agregarNuevoLote(loteDto, producto);
+    public List<Lote> obtenerLotes(Long id) throws HttpException {
+        Producto producto = this.obtenerProducto(id);
+        return producto.getLotes();
     }
 }
