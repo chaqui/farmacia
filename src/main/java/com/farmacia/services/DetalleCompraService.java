@@ -8,7 +8,10 @@ import com.farmacia.models.DetalleCompra;
 import com.farmacia.models.Lote;
 import com.farmacia.repository.DetalleCompraRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class DetalleCompraService {
 
     @Autowired
@@ -16,6 +19,7 @@ public class DetalleCompraService {
 
     public void crearDetalleCompra(Compra compra, Lote lote, Integer cantidad) {
         DetalleCompra detalleCompra = new DetalleCompra(compra, lote, cantidad);
+    
         detalleCompraRepository.save(detalleCompra);
 
     }

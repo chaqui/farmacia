@@ -11,14 +11,16 @@ import com.farmacia.models.Lote;
 import com.farmacia.models.Producto;
 import com.farmacia.repository.LoteRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class LoteService {
 
     @Autowired
     private LoteRepository loteRepository;
 
     private Lote crearLote(LoteDto.POST loteDto, Producto producto) {
-
         return loteRepository.save(new Lote(loteDto, producto));
     }
 
@@ -36,6 +38,7 @@ public class LoteService {
 
     public Lote agregarNuevoLote(LoteDto.POST loteDto, Producto producto) throws HttpException {
         Lote lote = this.obtenerLote(producto.getId().intValue(), loteDto.getLote());
+        log.info("Lote: {}", lote);
         if (lote == null) {
             return this.crearLote(loteDto, producto);
         } else {

@@ -37,6 +37,7 @@ public class Compra {
 
     public Compra(CompraDto.POST compraDto, Proveedor proveedor) {
         this.proveedor = proveedor;
+        this.fecha = compraDto.getFecha();
 
     }
 

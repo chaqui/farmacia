@@ -16,8 +16,10 @@ import com.farmacia.models.Proveedor;
 import com.farmacia.repository.CompraRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class CompraService {
 
     @Autowired
@@ -43,6 +45,9 @@ public class CompraService {
      */
     @Transactional(rollbackOn = Exception.class)
     public void crearCompra(CompraDto.POST compraDto) throws HttpException {
+        if (compraDto.getLotes().isEmpty()) {
+            throw new HttpException("La compra debe tener al menos un lote", 400);
+        }
         Proveedor proveedor = proveedorService.obtenerProveedor(compraDto.getIdProveedor());
         Compra compra = new Compra(compraDto, proveedor);
         compraRepository.save(compra);

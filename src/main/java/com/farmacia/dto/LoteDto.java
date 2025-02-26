@@ -15,21 +15,20 @@ public class LoteDto {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class POST{
+    public static class POST {
         protected Date fechaVencimiento;
         protected int cantidad;
         protected Float precio;
         protected String lote;
         protected Long idProducto;
     }
-    
+
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class GET extends POST{
-        private Long id;
+    public static class GET extends POST {
 
-        public GET(Lote lote){
+        public GET(Lote lote) {
             this.fechaVencimiento = lote.getFechaVencimiento();
             this.cantidad = lote.getCantidad();
             this.precio = lote.getPrecio();
@@ -37,6 +36,5 @@ public class LoteDto {
             this.idProducto = lote.getProducto().getId();
         }
     }
-    
 
 }

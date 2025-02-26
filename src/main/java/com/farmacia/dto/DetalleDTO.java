@@ -2,14 +2,20 @@ package com.farmacia.dto;
 
 import com.farmacia.models.DetalleCompra;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class DetalleDTO {
 
+    @Getter
+    @Setter
     public static class GET{
-        public Long id;
-        public String producto;
-        public int cantidad;
-        public Float precio;
-        public Float subtotal;
+        private Long id;
+        private String producto;
+        private int cantidad;
+        private Float precio;
+        private Float subtotal;
+        private String lote;
 
         public GET(DetalleCompra detalleCompra){
             this.id = detalleCompra.getId();
@@ -17,6 +23,7 @@ public class DetalleDTO {
             this.cantidad = detalleCompra.getCantidad();
             this.precio = detalleCompra.getLote().getPrecio();
             this.subtotal = detalleCompra.getSubtotal();
+            this.lote = detalleCompra.getLote().getLote();
         }
        
     }

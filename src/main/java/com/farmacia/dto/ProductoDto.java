@@ -28,6 +28,7 @@ public class ProductoDto {
         private Long id;
         private String image;
         private Integer stock;
+        private String proveedor;
         public Get(Producto producto){
             this.id = producto.getId();
             this.nombre = producto.getNombre();
@@ -35,6 +36,7 @@ public class ProductoDto {
             this.stock =producto.getCantidad();
             this.categoria = producto.getCategoria();
             this.image = producto.getImage();
+            this.proveedor = producto.getProveedor().getNombre();
         }
     }
 

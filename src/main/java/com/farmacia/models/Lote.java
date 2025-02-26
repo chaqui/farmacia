@@ -33,10 +33,6 @@ public class Lote {
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 
-    @ManyToOne
-    @JoinColumn(name = "detalle_compra_id", nullable = false)
-    private DetalleCompra detalleCompra;
-
     public Lote(LoteDto.POST lote, Producto producto) {
         this.lote = lote.getLote();
         this.cantidad = lote.getCantidad();

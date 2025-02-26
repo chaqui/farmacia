@@ -3,7 +3,9 @@ package com.farmacia.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,7 @@ public class CompraController {
      * @throws HttpException si existe un error al crear la compra
      */
     @PostMapping
-    public void crearCompra(CompraDto.POST compraDto) throws HttpException {
+    public void crearCompra(@RequestBody CompraDto.POST compraDto) throws HttpException {
         this.compraService.crearCompra(compraDto);
     }
 
@@ -41,7 +43,7 @@ public class CompraController {
     }
 
     @GetMapping("/{id}/detalles")
-    public List<DetalleDTO.GET> obtenerDetalle(Long id) {
+    public List<DetalleDTO.GET> obtenerDetalle(@PathVariable Long id) {
         return compraService.obtenerDetalle(id).stream().map(DetalleDTO.GET::new).toList();
     }
 
