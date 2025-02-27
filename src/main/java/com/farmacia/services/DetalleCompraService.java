@@ -8,6 +8,7 @@ import com.farmacia.models.DetalleCompra;
 import com.farmacia.models.Lote;
 import com.farmacia.repository.DetalleCompraRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -17,7 +18,8 @@ public class DetalleCompraService {
     @Autowired
     private DetalleCompraRepository detalleCompraRepository;
 
-    public void crearDetalleCompra(Compra compra, Lote lote, Integer cantidad) {
+    @Transactional(rollbackOn = Exception.class)
+    public void crearDetalleCompra(Compra compra, Lote lote, Long cantidad) {
         DetalleCompra detalleCompra = new DetalleCompra(compra, lote, cantidad);
     
         detalleCompraRepository.save(detalleCompra);

@@ -54,7 +54,7 @@ public class Producto {
         this.proveedor = proveedor;
     }
 
-    public int getCantidad() {
-        return this.lotes.stream().mapToInt(lote -> lote.getCantidad()).sum();
+    public Long getCantidad() {
+        return this.lotes.stream().mapToLong(lote -> lote.getCantidad()).sum();
     }
 }

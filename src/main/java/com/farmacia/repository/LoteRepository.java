@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.farmacia.models.Lote;
 
 @Repository
-public interface LoteRepository extends JpaRepository<Lote, Long> {
+public interface LoteRepository extends JpaRepository<Lote, String> {
 
 
     public List<Lote> findByProductoId(Long idProducto);

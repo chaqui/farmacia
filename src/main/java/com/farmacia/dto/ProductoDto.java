@@ -27,7 +27,7 @@ public class ProductoDto {
     public static class Get extends Post{ 
         private Long id;
         private String image;
-        private Integer stock;
+        private Long stock;
         private String proveedor;
         public Get(Producto producto){
             this.id = producto.getId();

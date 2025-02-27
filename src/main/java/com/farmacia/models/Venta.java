@@ -9,24 +9,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
-@Data
-public class Venta {
+public record Venta(
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Integer id,
 
-    @Column
-    private Date fecha;
+        @Column Date fecha,
 
-    @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
-    private Cliente cliente;
-    private Long total;
-
+        @ManyToOne @JoinColumn(name = "cliente_id", nullable = false) Cliente cliente,
+        Long total) {
 }

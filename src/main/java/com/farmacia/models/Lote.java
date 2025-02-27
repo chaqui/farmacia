@@ -21,7 +21,7 @@ public class Lote {
     private String lote;
 
     @Column
-    private Integer cantidad;
+    private Long cantidad;
 
     @Column
     private Float precio;

@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.farmacia.dto.LoteDto;
 import com.farmacia.dto.ProductoDto;
 import com.farmacia.exception.HttpException;
 import com.farmacia.models.Lote;
@@ -19,9 +18,6 @@ public class ProductoService {
 
     @Autowired
     private ProductoRepository productoRepository;
-
-    @Autowired
-    private LoteService loteService;
 
     public void crearProducto(ProductoDto.Post productoDto, Proveedor proveedor) {
         productoRepository.save(new Producto(productoDto, proveedor));

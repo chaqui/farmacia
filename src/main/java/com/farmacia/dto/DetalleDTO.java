@@ -12,7 +12,7 @@ public class DetalleDTO {
     public static class GET{
         private Long id;
         private String producto;
-        private int cantidad;
+        private Long cantidad;
         private Float precio;
         private Float subtotal;
         private String lote;

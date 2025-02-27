@@ -11,7 +11,6 @@ import com.farmacia.dto.ProductoDto;
 import com.farmacia.exception.HttpException;
 import com.farmacia.services.ProductoService;
 
-import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
