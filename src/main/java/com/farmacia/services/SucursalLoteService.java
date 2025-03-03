@@ -22,7 +22,7 @@ public class SucursalLoteService {
 
     @Transactional(rollbackOn = Exception.class)
     public void addLoteToSucursal(Sucursal sucursal, Lote lote, Long cantidad) {
-        SucursalLote sucursalLote = this.sucursalLoteRepository.findBySucursalIdAndLoteId(sucursal.id(), lote.getLote());
+        SucursalLote sucursalLote = this.sucursalLoteRepository.findBySucursalIdAndLoteId(sucursal.getId(), lote.getLote());
         if (sucursalLote == null) {
             sucursalLote = new SucursalLote(cantidad, lote, sucursal);
         } else {

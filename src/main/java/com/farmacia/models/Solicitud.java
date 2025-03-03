@@ -22,12 +22,13 @@ public class Solicitud {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     @Column
     Date fecha;
-    @Column
-    Long cantidad;
+
     @Column
     String estado;
+
     @Column
     String observacion;
 
@@ -40,7 +41,6 @@ public class Solicitud {
 
     public Solicitud(SolicitudDto.POST solicitudDto, Sucursal sucursal) {
         this.fecha = solicitudDto.getFecha();
-        this.cantidad = solicitudDto.getCantidad();
         this.estado = EstadoSolicitud.CREADA.getEstado();
         this.observacion = solicitudDto.getObservacion();
         this.sucursal = sucursal;

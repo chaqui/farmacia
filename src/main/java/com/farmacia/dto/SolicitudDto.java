@@ -18,7 +18,6 @@ public class SolicitudDto {
     @AllArgsConstructor
     public static class POST {
         protected Long idSucursal;
-        protected Long cantidad;
         protected String observacion;
         protected Date Fecha;
         private List<SolicitudDetalleDto.Post> detalles;
@@ -32,9 +31,8 @@ public class SolicitudDto {
 
         public GET(Solicitud solicitud) {
             this.id = solicitud.getId();
-            this.sucursal = solicitud.getSucursal().nombre();
-            this.idSucursal = solicitud.getSucursal().id();
-            this.cantidad = solicitud.getCantidad();
+            this.sucursal = solicitud.getSucursal().getNombre();
+            this.idSucursal = solicitud.getSucursal().getId();
         }
     }
 

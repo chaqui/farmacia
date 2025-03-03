@@ -24,8 +24,8 @@ public class SucursalDto {
         private Long id;
 
         public Get(Sucursal sucursal) {
-            this.id = sucursal.id();
-            this.nombre = sucursal.nombre();
+            this.id = sucursal.getId();
+            this.nombre = sucursal.getNombre();
         }
     }
 

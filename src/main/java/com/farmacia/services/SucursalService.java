@@ -1,9 +1,12 @@
 package com.farmacia.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.farmacia.dto.SucursalDto;
+import com.farmacia.models.Solicitud;
 import com.farmacia.models.Sucursal;
 import com.farmacia.repository.SucursalRepository;
 
@@ -32,12 +35,17 @@ public class SucursalService {
     public void actualizarSucursal(Long id, SucursalDto.Post sucursalDto) {
         Sucursal sucursal = sucursalRepository.findById(id).orElse(null);
         if (sucursal != null) {
-            sucursalRepository.save(new Sucursal(id, sucursalDto.getNombre()));
+            sucursalRepository.save(new Sucursal( sucursalDto));
         }
     }
 
     public Iterable<SucursalDto.Get> obtenerSucursales() {
         return sucursalRepository.findAll().stream().map(SucursalDto.Get::new).toList();
+    }
+
+    public List<Solicitud> obtenerSolicitudes(Long id) {
+        Sucursal sucursal = this.obtenerSucursal(id);
+        return sucursal.getSolicitudes();
     }
 
 }
