@@ -16,8 +16,10 @@ import com.farmacia.models.Sucursal;
 import com.farmacia.repository.SolicitudRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
 
 @Service
+@Log4j2
 public class SolicitudService {
 
     private final SolicitudRepository solicitudRepository;
@@ -44,7 +46,6 @@ public class SolicitudService {
         Sucursal sucursal = sucursalService.obtenerSucursal(solicitudDto.getIdSucursal());
         Solicitud solicitud = new Solicitud(solicitudDto, sucursal);
         solicitudRepository.save(solicitud);
-
         for (SolicitudDetalleDto.Post detalle : solicitudDto.getDetalles()) {
             solicitudDetalleService.addDetalleToSolicitud(solicitud, detalle);
         }

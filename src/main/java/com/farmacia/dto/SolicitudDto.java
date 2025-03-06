@@ -19,7 +19,7 @@ public class SolicitudDto {
     public static class POST {
         protected Long idSucursal;
         protected String observacion;
-        protected Date Fecha;
+        protected Date fecha;
         private List<SolicitudDetalleDto.Post> detalles;
     }
 
@@ -28,9 +28,12 @@ public class SolicitudDto {
     public static class GET extends POST {
         private Long id;
         private String sucursal;
+        private String estado;
 
         public GET(Solicitud solicitud) {
             this.id = solicitud.getId();
+            this.fecha = solicitud.getFecha();
+            this.estado = solicitud.getEstado();
             this.sucursal = solicitud.getSucursal().getNombre();
             this.idSucursal = solicitud.getSucursal().getId();
         }
