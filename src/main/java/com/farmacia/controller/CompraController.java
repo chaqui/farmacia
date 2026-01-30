@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +18,7 @@ import com.farmacia.services.CompraService;
 import com.farmacia.exception.HttpException;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/compras")
@@ -32,17 +35,20 @@ public class CompraController {
      * @throws HttpException si existe un error al crear la compra
      */
     @PostMapping
-    public void crearCompra(@RequestBody CompraDto.POST compraDto) throws HttpException {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void crearCompra(@Valid @RequestBody CompraDto.POST compraDto) throws HttpException {
         this.compraService.crearCompra(compraDto);
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<CompraDto.GET> obtenerCompras() {
         log.info("Obteniendo compras");
         return this.compraService.obtenerCompras().stream().map(CompraDto.GET::new).toList();
     }
 
     @GetMapping("/{id}/detalles")
+    @ResponseStatus(HttpStatus.OK)
     public List<DetalleDTO.GET> obtenerDetalle(@PathVariable Long id) {
         return compraService.obtenerDetalle(id).stream().map(DetalleDTO.GET::new).toList();
     }

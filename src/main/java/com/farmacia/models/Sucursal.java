@@ -29,6 +29,9 @@ public class Sucursal {
 
     @OneToMany(mappedBy = "sucursal")
     List<Solicitud> solicitudes;
+
+    @OneToMany(mappedBy = "sucursal")
+    List<Venta> ventas;
     
     
     public Sucursal(SucursalDto.Post sucursal) {

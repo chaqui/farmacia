@@ -77,4 +77,13 @@ public class LoteService {
         return loteEncontrado;
     }
 
+    public Lote reduceCantidadLote(String loteId, Long cantidad) throws HttpException {
+        Lote lote = this.obtenerLote(loteId);
+        if (lote.getCantidad() < cantidad) {
+            throw new HttpException("No hay suficiente cantidad en el lote", 400);
+        }
+        lote.setCantidad(lote.getCantidad() - cantidad);
+        return loteRepository.save(lote);
+    }
+
 }

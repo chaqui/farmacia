@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 import com.farmacia.dto.ProductoDto;
 import com.farmacia.dto.ProveedorDto;
@@ -27,7 +28,7 @@ public class ProveedorController {
     private ProveedorService proveedorService;
 
     @PostMapping
-    public void crearProveedor(@RequestBody ProveedorDto.POST proveedorDto) {
+    public void crearProveedor(@Valid @RequestBody ProveedorDto.POST proveedorDto) {
         proveedorService.crearProveedor(proveedorDto);
     }
 
@@ -43,7 +44,7 @@ public class ProveedorController {
     }
 
     @PostMapping("/{id}/productos")
-    public void agregarProducto(@PathVariable Long id, @RequestBody ProductoDto.Post productoDto) throws HttpException {
+    public void agregarProducto(@PathVariable Long id, @Valid @RequestBody ProductoDto.Post productoDto) throws HttpException {
         proveedorService.agregarProducto(id, productoDto);
     }
 

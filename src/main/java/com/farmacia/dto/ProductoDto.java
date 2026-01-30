@@ -1,5 +1,7 @@
 package com.farmacia.dto;
 
+import java.util.List;
+
 import com.farmacia.models.Producto;
 
 import lombok.AllArgsConstructor;
@@ -29,6 +31,7 @@ public class ProductoDto {
         private String image;
         private Long stock;
         private String proveedor;
+        private List<LoteDto.GETLoteProducto> lotes;
         public Get(Producto producto){
             this.id = producto.getId();
             this.nombre = producto.getNombre();
@@ -37,6 +40,7 @@ public class ProductoDto {
             this.categoria = producto.getCategoria();
             this.image = producto.getImage();
             this.proveedor = producto.getProveedor().getNombre();
+            this.lotes = producto.getLotes().stream().map(LoteDto.GETLoteProducto::new).toList();
         }
     }
 

@@ -39,4 +39,10 @@ public class ProductoService {
         Producto producto = this.obtenerProducto(id);
         return producto.getLotes();
     }
+
+    public List<ProductoDto.Get> buscarProductosPorNombre(String nombre) {
+        return productoRepository.findByNombreContainingIgnoreCase(nombre)
+                .stream()
+                .map(ProductoDto.Get::new).toList();
+    }
 }

@@ -40,6 +40,9 @@ public class Producto {
     @Column
     private Date fechaVencimiento;
 
+    @Column 
+    private Integer cantidadMinima;
+
     @ManyToOne
     @JoinColumn(name = "proveedor_id", nullable = false)
     private Proveedor proveedor;

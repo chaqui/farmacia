@@ -1,5 +1,6 @@
 package com.farmacia.models;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import com.farmacia.dto.LoteDto;
@@ -27,7 +28,10 @@ public class Lote {
     private Float precio;
 
     @Column
-    private Date fechaVencimiento;
+    private Float precioVenta;
+
+    @Column
+    private LocalDate fechaVencimiento;
 
     @ManyToOne
     @JoinColumn(name = "producto_id", nullable = false)
@@ -39,5 +43,11 @@ public class Lote {
         this.precio = lote.getPrecio();
         this.fechaVencimiento = lote.getFechaVencimiento();
         this.producto = producto;
+        this.precioVenta = lote.getPrecioVenta();
+    }
+
+    public Float getGanancia() {
+
+        return this.precioVenta == null ? this.precio : this.precioVenta - this.precio;
     }
 }

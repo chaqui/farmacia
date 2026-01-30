@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,12 +29,12 @@ public class SolicitudController {
         this.solicitudDetalleService = solicitudDetalleService;
     }
     @PostMapping
-    public void crearSolicitud(@RequestBody SolicitudDto.POST solicitudDto) throws HttpException {
+    public void crearSolicitud(@Valid @RequestBody SolicitudDto.POST solicitudDto) throws HttpException {
         this.solicitudService.crearSolicitud(solicitudDto);
     }
 
     @PostMapping("/{id}/enviar")
-    public void enviarSolicitud(@PathVariable Long id, @RequestBody SolicitudDto.ENVIAR solicitudDto)
+    public void enviarSolicitud(@PathVariable Long id, @Valid @RequestBody SolicitudDto.ENVIAR solicitudDto)
             throws HttpException {
         this.solicitudService.enviarSolicitud(id, solicitudDto.getLotes());
     }

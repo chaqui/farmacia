@@ -15,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/productos")
@@ -29,16 +30,23 @@ public class ProductoController {
         return productoService.obtenerProductos();
     }
 
+    @GetMapping()
+    public List<ProductoDto.Get> getProductoPorNombre(@RequestParam String nombre) {
+        log.info("Buscando productos con nombre: " + nombre);
+        return productoService.buscarProductosPorNombre(nombre);
+
+    }
+
     @GetMapping("/{id}")
-    public ProductoDto.Get obtenerProducto(@PathVariable  Long id) throws HttpException {
+    public ProductoDto.Get obtenerProducto(@PathVariable Long id) throws HttpException {
         return new ProductoDto.Get(productoService.obtenerProducto(id));
     }
 
     @GetMapping("/{id}/lotes")
-    public List<LoteDto.GET> obtenerLotes( @PathVariable Long id) throws HttpException {
+    public List<LoteDto.GET> obtenerLotes(@PathVariable Long id) throws HttpException {
         log.info("Obteniendo lotes del producto con id: " + id);
         return this.productoService.obtenerLotes(id).stream().map(lote -> new LoteDto.GET(lote))
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }

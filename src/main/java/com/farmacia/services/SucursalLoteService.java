@@ -3,6 +3,7 @@ package com.farmacia.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.farmacia.exception.HttpException;
 import com.farmacia.models.Lote;
 import com.farmacia.models.Sucursal;
 import com.farmacia.models.SucursalLote;
@@ -26,10 +27,27 @@ public class SucursalLoteService {
         if (sucursalLote == null) {
             sucursalLote = new SucursalLote(cantidad, lote, sucursal);
         } else {
-            sucursalLote.setCantidad(sucursalLote.getCantidad() + lote.getCantidad());
+            sucursalLote.setCantidad(sucursalLote.getCantidad() + cantidad);
 
         }
         this.sucursalLoteRepository.save(sucursalLote);
+    }
+
+    public SucursalLote obtenerLoteEnSucursal(Long sucursalId, String loteId) throws HttpException {
+        SucursalLote sucursalLote = this.sucursalLoteRepository.findBySucursalIdAndLoteId(sucursalId, loteId);
+        if (sucursalLote != null) {
+            return sucursalLote;
+        }
+        throw new HttpException("Lote no encontrado en la sucursal", 404);
+    }
+
+    public SucursalLote reducirCantidadLoteEnSucursal(Long sucursalId, String loteId, Long cantidad) throws HttpException {
+        SucursalLote sucursalLote = this.obtenerLoteEnSucursal(sucursalId, loteId);
+        if (sucursalLote.getCantidad() < cantidad) {
+            throw new HttpException("No hay suficiente cantidad del lote en la sucursal", 400);
+        }
+        sucursalLote.setCantidad(sucursalLote.getCantidad() - cantidad);
+        return this.sucursalLoteRepository.save(sucursalLote);
     }
 
 }
