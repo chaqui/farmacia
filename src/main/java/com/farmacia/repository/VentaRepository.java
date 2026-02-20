@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.farmacia.models.Venta;
 
 @Repository
-public interface VentaRepository extends JpaRepository<Venta, Long> {
+public interface VentaRepository extends JpaRepository<Venta, Integer> {
 
     List<Venta> findBySucursalId(Integer sucursalId);
 

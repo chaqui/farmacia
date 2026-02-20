@@ -15,7 +15,7 @@ public class ProductoDto {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Post{
+    public static class Post {
         protected String nombre;
         protected String descripcion;
         protected String categoria;
@@ -26,25 +26,23 @@ public class ProductoDto {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Get extends Post{ 
+    public static class Get extends Post {
         private Long id;
         private String image;
         private Long stock;
         private String proveedor;
         private List<LoteDto.GETLoteProducto> lotes;
-        public Get(Producto producto){
+
+        public Get(Producto producto) {
             this.id = producto.getId();
             this.nombre = producto.getNombre();
             this.descripcion = producto.getDescripcion();
-            this.stock =producto.getCantidad();
+            this.stock = producto.getCantidad();
             this.categoria = producto.getCategoria();
             this.image = producto.getImage();
             this.proveedor = producto.getProveedor().getNombre();
             this.lotes = producto.getLotes().stream().map(LoteDto.GETLoteProducto::new).toList();
         }
     }
-
-
-
 
 }

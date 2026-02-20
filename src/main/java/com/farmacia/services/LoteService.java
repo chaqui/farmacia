@@ -58,7 +58,6 @@ public class LoteService {
             if (loteDto.getFechaVencimiento() != lote.getFechaVencimiento()) {
                 throw new HttpException("El lote a agregar ya existe con una fecha de vencimiento diferente", 400);
             }
-            lote.setCantidad(lote.getCantidad() + loteDto.getCantidad());
             loteRepository.save(lote);
             return lote;
         }
@@ -72,7 +71,6 @@ public class LoteService {
         }
         this.sucursalLoteService.addLoteToSucursal(sucursal, loteEncontrado, loteEnviar.getCantidad());
 
-        loteEncontrado.setCantidad(loteEncontrado.getCantidad() - loteEnviar.getCantidad());
         loteRepository.save(loteEncontrado);
         return loteEncontrado;
     }
@@ -82,7 +80,6 @@ public class LoteService {
         if (lote.getCantidad() < cantidad) {
             throw new HttpException("No hay suficiente cantidad en el lote", 400);
         }
-        lote.setCantidad(lote.getCantidad() - cantidad);
         return loteRepository.save(lote);
     }
 

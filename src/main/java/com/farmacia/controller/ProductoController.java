@@ -30,7 +30,7 @@ public class ProductoController {
         return productoService.obtenerProductos();
     }
 
-    @GetMapping()
+    @GetMapping("/buscar")
     public List<ProductoDto.Get> getProductoPorNombre(@RequestParam String nombre) {
         log.info("Buscando productos con nombre: " + nombre);
         return productoService.buscarProductosPorNombre(nombre);
