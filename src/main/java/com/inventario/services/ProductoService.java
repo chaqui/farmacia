@@ -1,26 +1,78 @@
 package com.inventario.services;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.inventario.dto.ProductoDto;
 import com.inventario.exception.HttpException;
+import com.inventario.models.Fotografia;
 import com.inventario.models.Lote;
 import com.inventario.models.Producto;
 import com.inventario.models.Proveedor;
 import com.inventario.repository.ProductoRepository;
+import com.inventario.models.Categoria;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ProductoService {
 
-    @Autowired
     private ProductoRepository productoRepository;
+    private CategoriaService categoriaService;
 
+    public ProductoService(ProductoRepository productoRepository, CategoriaService categoriaService) {
+        this.productoRepository = productoRepository;
+        this.categoriaService = categoriaService;
+    }
+
+    @Transactional
     public void crearProducto(ProductoDto.Post productoDto, Proveedor proveedor) {
-        productoRepository.save(new Producto(productoDto, proveedor));
+        Producto producto = new Producto(productoDto, proveedor);
+        productoRepository.save(producto);
+
+        if (productoDto.getFotografias() != null) {
+            productoDto.getFotografias().forEach(url -> {
+                producto.agregarFotografia(new Fotografia(url, producto));
+            });
+        }
+        if (productoDto.getRelacionadosIds() != null) {
+            productoDto.getRelacionadosIds().forEach(id -> {
+                Producto relacionado = productoRepository.findById(id).orElse(null);
+                if (relacionado != null) {
+                    producto.agregarRelacionado(relacionado);
+                }
+            });
+        }
+
+        List<Categoria> categorias = new java.util.ArrayList<>();
+
+        // ids preferidos
+        if (productoDto.getCategoriaIds() != null) {
+            productoDto.getCategoriaIds().forEach(id -> {
+                Categoria categoria = categoriaService.obtenerCategoria(id);
+                if (categoria != null) categorias.add(categoria);
+            });
+        }
+
+        // nombres: crear si no existen
+        if (productoDto.getCategoriaNombres() != null) {
+            productoDto.getCategoriaNombres().forEach(nombre -> {
+                if (nombre == null || nombre.isBlank()) return;
+                Categoria categoria = categoriaService.crearSiNoExiste(nombre);
+                if (categoria != null) categorias.add(categoria);
+            });
+        }
+
+        if (!categorias.isEmpty()) {
+            categorias.forEach(producto::agregarCategoria);
+        }
+
+        productoRepository.save(producto);
     }
 
     public List<ProductoDto.Get> obtenerProductos() {
@@ -30,7 +82,7 @@ public class ProductoService {
     public Producto obtenerProducto(Long id) throws HttpException {
         Producto producto = productoRepository.findById(id).orElse(null);
         if (producto == null) {
-            throw new HttpException("Producto no encontrado",404);
+            throw new HttpException("Producto no encontrado", 404);
         }
         return producto;
     }
@@ -49,5 +101,29 @@ public class ProductoService {
     public List<ProductoDto.Get> buscarProductos(String query) {
         return productoRepository.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(query, query)
                 .stream().map(ProductoDto.Get::new).toList();
+    }
+
+    public List<ProductoDto.Get> buscarProductosRelacionados(Long id) throws HttpException {
+        Producto producto = this.obtenerProducto(id);
+
+        Set<Producto> resultado = new LinkedHashSet<>();
+
+        // agregar relacionados explícitos
+        if (producto.getRelacionados() != null) {
+            resultado.addAll(producto.getRelacionados());
+        }
+
+        // agregar todos los de las mismas categorías
+        if (producto.getCategorias() != null && !producto.getCategorias().isEmpty()) {
+            List<Producto> mismos = productoRepository.findDistinctByCategoriasIn(producto.getCategorias());
+            if (mismos != null) {
+                resultado.addAll(mismos);
+            }
+        }
+
+        // quitar el propio producto si está presente
+        resultado.removeIf(p -> p.getId().equals(producto.getId()));
+
+        return resultado.stream().map(ProductoDto.Get::new).toList();
     }
 }

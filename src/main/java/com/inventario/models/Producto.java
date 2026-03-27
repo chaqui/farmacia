@@ -2,8 +2,10 @@ package com.inventario.models;
 
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 import com.inventario.dto.ProductoDto;
+import com.inventario.models.Categoria;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -34,8 +36,13 @@ public class Producto {
     @Column
     private String descripcion;
 
-    @Column
-    private String categoria;
+    @ManyToMany
+    @JoinTable(
+        name = "producto_categoria",
+        joinColumns = @JoinColumn(name = "producto_id"),
+        inverseJoinColumns = @JoinColumn(name = "categoria_id")
+    )
+    private List<Categoria> categorias = new ArrayList<>();
 
     @Column
     private String image;
@@ -51,10 +58,10 @@ public class Producto {
     private Proveedor proveedor;
 
     @OneToMany(mappedBy = "producto")
-    private List<Lote> lotes;
+    private List<Lote> lotes = new ArrayList<>();
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Fotografia> fotografias;
+    private List<Fotografia> fotografias = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -62,16 +69,27 @@ public class Producto {
         joinColumns = @JoinColumn(name = "producto_id"),
         inverseJoinColumns = @JoinColumn(name = "relacionado_id")
     )
-    private List<Producto> relacionados;
+    private List<Producto> relacionados = new ArrayList<>();
 
     public Producto(ProductoDto.Post dto, Proveedor proveedor) {
         this.nombre = dto.getNombre();
         this.descripcion = dto.getDescripcion();
-        this.categoria = dto.getCategoria();
         this.proveedor = proveedor;
     }
 
     public Long getCantidad() {
         return this.lotes.stream().mapToLong(lote -> lote.getCantidad()).sum();
+    }
+
+    public void agregarRelacionado(Producto producto) {
+        this.relacionados.add(producto);
+    }
+
+    public void agregarFotografia(Fotografia fotografia) {
+        this.fotografias.add(fotografia);
+    }
+
+    public void agregarCategoria(Categoria categoria) {
+        this.categorias.add(categoria);
     }
 }

@@ -30,6 +30,9 @@ public class Lote {
     private Float precioVenta;
 
     @Column
+    private Float precioDescuento;
+
+    @Column
     private LocalDate fechaVencimiento;
 
     @ManyToOne
@@ -48,6 +51,7 @@ public class Lote {
         this.fechaVencimiento = lote.getFechaVencimiento();
         this.producto = producto;
         this.precioVenta = lote.getPrecioVenta();
+        this.precioDescuento = lote.getPrecioDescuento();
     }
 
     public Float getGanancia() {

@@ -20,6 +20,12 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -43,6 +49,9 @@ public class Venta {
 
         @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
         List<DetalleVenta> detalleVentas = new ArrayList<>();
+
+        @OneToMany(mappedBy = "venta")
+        List<Credito> creditos = new ArrayList<>();
 
         public Float getTotal() {
                 Float total = 0f;

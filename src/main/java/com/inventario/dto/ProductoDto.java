@@ -4,6 +4,10 @@ import java.util.List;
 
 import com.inventario.models.Producto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,12 +20,23 @@ public class ProductoDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Post {
+        @NotBlank
+        @Size(max = 200)
         protected String nombre;
+
+        @Size(max = 1000)
         protected String descripcion;
-        protected String categoria;
+
+        protected List<@Positive Long> categoriaIds;
+
+        protected List<@NotBlank @Size(max = 200) String> categoriaNombres;
+
+        @Positive
         protected Long idProveedor;
-        private List<String> fotografias;
-        private List<Long> relacionadosIds;
+
+        private List<@NotBlank @Size(max = 1000) String> fotografias;
+
+        private List<@Positive Long> relacionadosIds;
 
     }
 
@@ -34,17 +49,16 @@ public class ProductoDto {
         private String image;
         private Long stock;
         private String proveedor;
-        private List<LoteDto.GETLoteProducto> lotes;
+        private java.util.List<String> categorias;
 
         public Get(Producto producto) {
             this.id = producto.getId();
             this.nombre = producto.getNombre();
             this.descripcion = producto.getDescripcion();
             this.stock = producto.getCantidad();
-            this.categoria = producto.getCategoria();
+            this.categorias = producto.getCategorias() != null ? producto.getCategorias().stream().map(c -> c.getNombre()).toList() : null;
             this.image = producto.getImage();
             this.proveedor = producto.getProveedor().getNombre();
-            this.lotes = producto.getLotes().stream().map(LoteDto.GETLoteProducto::new).toList();
         }
     }
 

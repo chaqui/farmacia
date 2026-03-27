@@ -22,6 +22,7 @@ public class LoteDto {
         protected LocalDate fechaVencimiento;
         protected Float precio;
         protected Float precioVenta;
+        protected Float precioDescuento;
         protected String lote;
         protected Long idProducto;
         protected Long cantidad;
@@ -33,6 +34,7 @@ public class LoteDto {
     public static class GET extends POST {
 
         private Float ganancia;
+        private Float precioDescuento;
 
         public GET(Lote lote) {
             this.fechaVencimiento = lote.getFechaVencimiento();
@@ -41,6 +43,7 @@ public class LoteDto {
             this.lote = lote.getLote();
             this.idProducto = lote.getProducto().getId();
             this.precioVenta = lote.getPrecioVenta();
+            this.precioDescuento = lote.getPrecioDescuento();
             this.ganancia = lote.getGanancia();
         }
 

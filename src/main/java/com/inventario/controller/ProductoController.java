@@ -13,6 +13,7 @@ import com.inventario.services.ProductoService;
 
 import lombok.extern.log4j.Log4j2;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,6 +43,15 @@ public class ProductoController {
 
     }
 
+    @GetMapping("/search")
+    public List<ProductoDto.Get> buscarProductos(@RequestParam(name = "q", required = false) String q) {
+        log.info("Busqueda general productos q: " + q);
+        if (q == null || q.isBlank()) {
+            return new ArrayList<>();
+        }
+        return productoService.buscarProductos(q);
+    }
+
     @GetMapping("/{id}")
     public ProductoDto.Get obtenerProducto(@PathVariable Long id) throws HttpException {
         return new ProductoDto.Get(productoService.obtenerProducto(id));
@@ -52,6 +62,11 @@ public class ProductoController {
         log.info("Obteniendo lotes del producto con id: " + id);
         return this.productoService.obtenerLotes(id).stream().map(lote -> new LoteDto.GET(lote))
                 .toList();
+    }
+
+    @GetMapping("/{id}/relacionados")
+    public List<ProductoDto.Get> obtenerRelacionados(@PathVariable Long id) throws HttpException {
+        return this.productoService.buscarProductosRelacionados(id);
     }
 
 }

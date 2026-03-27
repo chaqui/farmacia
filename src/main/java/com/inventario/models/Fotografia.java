@@ -33,4 +33,9 @@ public class Fotografia {
         this.producto = producto;
     }
 
+    public Fotografia(String url, Producto producto) {
+        this.url = url;
+        this.producto = producto;
+    }
+
 }
