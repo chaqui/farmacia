@@ -101,4 +101,9 @@ public class CreditoService {
         creditoRepository.delete(existente);
     }
 
+    @Transactional
+    public Credito guardarCredito(Credito credito) {
+        return creditoRepository.save(credito);
+    }
+
 }

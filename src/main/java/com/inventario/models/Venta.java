@@ -4,12 +4,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.integration.IntegrationProperties.RSocket.Client;
+
+import com.inventario.constants.EstadoVenta;
 import com.inventario.dto.VentaDto;
 
 import java.util.ArrayList;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,13 +40,23 @@ public class Venta {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        Integer id;
+        private Integer id;
 
         @Column(nullable = false)
-        LocalDate fecha;
+        private LocalDate fecha;
 
+        @Column(nullable= true)
+        private String nombreCliente;
+
+        @Enumerated(EnumType.STRING)
         @Column(nullable = false)
-        String clienteNombre;
+        EstadoVenta estado = EstadoVenta.CREADA;
+
+        @Column(nullable = true)
+        Boolean esCredito;
+
+        @Column(nullable = true)
+        Float montoCredito;
 
         @ManyToOne
         @JoinColumn(name = "sucursal_id", nullable = true)
@@ -53,6 +68,10 @@ public class Venta {
         @OneToMany(mappedBy = "venta")
         List<Credito> creditos = new ArrayList<>();
 
+        @ManyToOne 
+        @JoinColumn(name = "cliente_id", nullable = true)
+        Cliente cliente;
+
         public Float getTotal() {
                 Float total = 0f;
                 if (detalleVentas == null || detalleVentas.isEmpty()) return total;
@@ -62,20 +81,69 @@ public class Venta {
                 return total;
         }
 
-        public Venta(VentaDto.Post ventaDto, Sucursal sucursal) {
-                this.fecha = ventaDto.getFecha();
-                this.clienteNombre = ventaDto.getCliente();
+        public Venta(VentaDto.Post ventaDto, Sucursal sucursal, Cliente cliente) {
+                this(ventaDto, cliente);
                 this.sucursal = sucursal;
         }
 
-        public Venta(VentaDto.Post ventaDto) {
+        public Venta(VentaDto.Post ventaDto, Cliente cliente) {
                 this.fecha = ventaDto.getFecha();
-                this.clienteNombre = ventaDto.getCliente();
+                this.cliente = cliente;
+                this.nombreCliente = cliente != null ? cliente.getNombre() : ventaDto.getNombreCliente();
+                this.estado = EstadoVenta.CREADA;
         }
 
         public void addDetalle(DetalleVenta detalle) {
                 detalle.setVenta(this);
                 this.detalleVentas.add(detalle);
+        }
+
+        public void cambiarAVerificada(Boolean esCredito) {
+                if (this.estado != EstadoVenta.CREADA) {
+                        throw new IllegalStateException("La venta debe estar en estado CREADA para pasar a VERIFICADA");
+                }
+                this.esCredito = esCredito;
+                // Si es crédito, montoCredito = total; si no es crédito, montoCredito = 0
+                this.montoCredito = (esCredito != null && esCredito) ? this.getTotal() : 0f;
+                this.estado = EstadoVenta.VERIFICADA;
+        }
+
+        public void cambiarAVerificada(Float montoCredito) {
+                if (this.estado != EstadoVenta.CREADA) {
+                        throw new IllegalStateException("La venta debe estar en estado CREADA para pasar a VERIFICADA");
+                }
+                this.esCredito = montoCredito != null && montoCredito > 0;
+                this.montoCredito = this.esCredito ? montoCredito : 0f;
+                this.estado = EstadoVenta.VERIFICADA;
+        }
+
+        public void cambiarAAutorizada() {
+                if (this.estado != EstadoVenta.VERIFICADA) {
+                        throw new IllegalStateException("La venta debe estar en estado VERIFICADA para pasar a AUTORIZADA");
+                }
+                this.estado = EstadoVenta.AUTORIZADA;
+        }
+
+        public void cambiarACancelada() {
+                if (this.estado == EstadoVenta.CANCELADA) {
+                        throw new IllegalStateException("La venta ya está cancelada");
+                }
+                if (this.estado == EstadoVenta.AUTORIZADA) {
+                        throw new IllegalStateException("No se puede cancelar una venta ya autorizada");
+                }
+                this.estado = EstadoVenta.CANCELADA;
+        }
+
+        public boolean puedeSerVerificada() {
+                return this.estado == EstadoVenta.CREADA && this.detalleVentas != null && !this.detalleVentas.isEmpty();
+        }
+
+        public boolean puedeSerAutorizada() {
+                return this.estado == EstadoVenta.VERIFICADA;
+        }
+
+        public boolean puedeSercancelada() {
+                return this.estado == EstadoVenta.CREADA || this.estado == EstadoVenta.VERIFICADA;
         }
 
 }

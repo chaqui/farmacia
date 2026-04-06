@@ -1,8 +1,12 @@
 package com.inventario.repository;
 
+import com.inventario.constants.EstadoVenta;
 import com.inventario.models.Venta;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface VentaRepository extends JpaRepository<Venta, Integer> {
+import java.util.List;
 
+public interface VentaRepository extends JpaRepository<Venta, Integer> {
+    List<Venta> findByEstado(EstadoVenta estado);
 }
+

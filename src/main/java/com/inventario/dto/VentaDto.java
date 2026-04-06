@@ -3,7 +3,9 @@ package com.inventario.dto;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.inventario.constants.EstadoVenta;
 import com.inventario.models.Venta;
+import com.inventario.validation.EitherClienteIdOrNombre;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,10 +24,9 @@ public class VentaDto {
     @Getter
     @NoArgsConstructor
     @Setter
+    @EitherClienteIdOrNombre
     public static class Post {
 
-        @NotBlank(message = "El cliente es obligatorio")
-        private String cliente;
 
         @NotNull(message = "La fecha es obligatoria")
         @PastOrPresent(message = "La fecha no puede ser futura")
@@ -33,6 +34,10 @@ public class VentaDto {
 
 
         private List<VentaDetalleDto.Post> detalles;
+
+        protected Integer clienteId;
+
+        protected String nombreCliente;
 
         /**
          * Constructor para Ventas Sin Sucursal
@@ -43,8 +48,8 @@ public class VentaDto {
          * @param cantidad   cantidad vendida
          * @param loteId     id del lote
          */
-        public Post(String cliente, LocalDate fecha) {
-            this.cliente = cliente;
+        public Post(Integer cliente, LocalDate fecha) {
+            this.clienteId = cliente;
             this.fecha = fecha;
 
         }
@@ -59,12 +64,18 @@ public class VentaDto {
 
         private String sucursal;
         private Float total;
+        private EstadoVenta estado;
+        private Boolean esCredito;
+        private Float montoCredito;
 
         public GetConSucursal(Venta venta) {
-            super(venta.getClienteNombre(), venta.getFecha());
+            super(venta.getCliente().getId(), venta.getFecha());
             this.id = venta.getId();
             this.sucursal = venta.getSucursal().getNombre();
             this.total = venta.getTotal();
+            this.estado = venta.getEstado();
+            this.esCredito = venta.getEsCredito();
+            this.montoCredito = venta.getMontoCredito();
         }
     }
 
@@ -76,12 +87,27 @@ public class VentaDto {
         private Integer id;
         private String cliente;
         private Float total;
+        private EstadoVenta estado;
+        private Boolean esCredito;
+        private Float montoCredito;
 
         public GetSinSucursal(Venta venta) {
-            super(venta.getClienteNombre(), venta.getFecha());
+            super(venta.getCliente().getId(), venta.getFecha());
             this.id = venta.getId();
-            this.cliente = venta.getClienteNombre();
+            this.cliente = venta.getCliente().getNombre();
             this.total = venta.getTotal();
+            this.estado = venta.getEstado();
+            this.esCredito = venta.getEsCredito();
+            this.montoCredito = venta.getMontoCredito();
+            
         }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class Verificar {
+        private Boolean esCredito;
+        private Float montoCredito;
     }
 }

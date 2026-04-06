@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.inventario.dto.ClienteDto;
+
 @Entity
 @Table(name = "clientes")
 @Data
@@ -50,6 +52,12 @@ public class Cliente {
             if (c != null && c.getMonto() != null) total += c.getMonto();
         }
         return total;
+    }
+
+    public Cliente(ClienteDto.Post dto) {
+        this.nombre = dto.getNombre();
+        this.tipoCliente = dto.getTipoCliente();
+        this.limiteCredito = dto.getLimiteCredito();
     }
 
 }

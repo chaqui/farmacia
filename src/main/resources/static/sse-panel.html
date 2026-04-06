@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Notificaciones SSE - Sistema de Inventario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 20px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+
+        .status-conectado {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .status-desconectado {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .status-conectando {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .notificaciones-log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .notificacion-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+            background-color: white;
+            border-radius: 3px;
+        }
+
+        .notificacion-credito {
+            border-left-color: #007bff;
+            background-color: #e7f3ff;
+        }
+
+        .notificacion-compra {
+            border-left-color: #28a745;
+            background-color: #e8f5e9;
+        }
+
+        .notificacion-error {
+            border-left-color: #dc3545;
+            background-color: #ffe8e8;
+        }
+
+        .notificacion-success {
+            border-left-color: #28a745;
+            background-color: #e8f5e9;
+        }
+
+        .notificacion-warning {
+            border-left-color: #ffc107;
+            background-color: #fff8e8;
+        }
+
+        .timestamp {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .btn {
+            margin-bottom: 5px;
+        }
+
+        h3 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .form-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .sse-info {
+            background-color: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .sse-info h5 {
+            color: #17a2b8;
+            margin-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background-color: #17a2b8;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .tech-badge.websocket {
+            background-color: #6f42c1;
+        }
+
+        .tech-badge.sse {
+            background-color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="text-white mb-3">🔔 Panel de Notificaciones SSE</h1>
+                <p class="text-white">Sistema de notificaciones en tiempo real (Server-Sent Events)</p>
+            </div>
+        </div>
+
+        <!-- Info SSE -->
+        <div class="sse-info">
+            <h5>ℹ️ Sobre Server-Sent Events (SSE)</h5>
+            <p class="mb-2">
+                <strong>SSE</strong> es una alternativa a WebSocket optimizada para <strong>notificaciones unidireccionales</strong> 
+                (servidor → cliente). No requiere que el cliente envíe datos.
+            </p>
+            <p class="mb-0">
+                <span class="tech-badge sse">SSE</span> 
+                <strong>Ventajas:</strong> HTTP estándar, reconexión automática, menos overhead, más simple.
+                <br />
+                <span class="tech-badge websocket">WebSocket</span> 
+                <strong>Mejor para:</strong> Comunicación bidireccional, chat, juegos.
+            </p>
+        </div>
+
+        <!-- Estado de Conexión -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Estado de Conexión SSE</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>
+                            <strong>General:</strong>
+                            <span id="status-general" class="status-badge status-desconectado">● Desconectado</span>
+                        </p>
+                        <p>
+                            <strong>Crédito:</strong>
+                            <span id="status-credito" class="status-badge status-desconectado">● Desconectado</span>
+                        </p>
+                        <p>
+                            <strong>Compras:</strong>
+                            <span id="status-compras" class="status-badge status-desconectado">● Desconectado</span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p>
+                            <strong>Estado SSE General:</strong>
+                            <span id="estado-general" class="badge bg-secondary">DESCONECTADO</span>
+                        </p>
+                        <p>
+                            <strong>Estado SSE Crédito:</strong>
+                            <span id="estado-credito" class="badge bg-secondary">DESCONECTADO</span>
+                        </p>
+                        <p>
+                            <strong>Estado SSE Compra:</strong>
+                            <span id="estado-compra" class="badge bg-secondary">DESCONECTADO</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Panel de Control -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">⚙️ Panel de Control SSE</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="mb-3">Conexiones SSE</h6>
+                        <button class="btn btn-primary btn-sm w-100 mb-2" onclick="conectarGeneral()">
+                            Conectar General
+                        </button>
+                        <button class="btn btn-info btn-sm w-100 mb-2" onclick="conectarCredito()">
+                            Conectar Crédito
+                        </button>
+                        <button class="btn btn-success btn-sm w-100 mb-3" onclick="conectarCompras()">
+                            Conectar Compras
+                        </button>
+
+                        <h6 class="mb-3">Enviar Notificaciones</h6>
+
+                        <!-- Notificaciones de Crédito -->
+                        <div class="form-section">
+                            <h6 class="mb-2">📋 Crédito</h6>
+                            <button class="btn btn-info btn-sm w-100 mb-2" onclick="notificarSolicitudCredito()">
+                                Solicitud Pendiente
+                            </button>
+                            <button class="btn btn-success btn-sm w-100 mb-2" onclick="notificarAprobacionCredito()">
+                                Crédito Aprobado
+                            </button>
+                            <button class="btn btn-danger btn-sm w-100" onclick="notificarRechazoCredito()">
+                                Crédito Rechazado
+                            </button>
+                        </div>
+
+                        <!-- Notificaciones de Compra -->
+                        <div class="form-section">
+                            <h6 class="mb-2">🛒 Compras</h6>
+                            <button class="btn btn-warning btn-sm w-100 mb-2" onclick="notificarVerificacionCompra()">
+                                Verificación Pendiente
+                            </button>
+                            <button class="btn btn-success btn-sm w-100 mb-2" onclick="notificarAutorizacionCompra()">
+                                Compra Autorizada
+                            </button>
+                            <button class="btn btn-danger btn-sm w-100" onclick="notificarRechazoCompra()">
+                                Compra Rechazada
+                            </button>
+                        </div>
+
+                        <h6 class="mb-3 mt-3">Herramientas</h6>
+                        <button class="btn btn-secondary btn-sm w-100 mb-2" onclick="enviarPrueba()">
+                            Enviar Prueba
+                        </button>
+                        <button class="btn btn-danger btn-sm w-100 mb-2" onclick="limpiarLogs()">
+                            Limpiar Logs
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm w-100" onclick="desconectarTodo()">
+                            Desconectar Todo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Notificaciones -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">📨 Log de Notificaciones SSE</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="notificaciones-contenedor" class="notificaciones-log">
+                            <div class="text-center text-muted">
+                                <p>Conecta a los servidores SSE para recibir notificaciones...</p>
+                            </div>
+                        </div>
+                        <div id="notificaciones-log" class="notificaciones-log mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del Sistema -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">ℹ️ Información SSE</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Endpoints SSE disponibles:</strong></p>
+                        <ul>
+                            <li><code>GET /api/notificaciones/stream</code> - Todas</li>
+                            <li><code>GET /api/notificaciones/stream/credito</code> - Crédito</li>
+                            <li><code>GET /api/notificaciones/stream/compra</code> - Compra</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Endpoints REST para enviar notificaciones:</strong></p>
+                        <ul>
+                            <li><code>POST /api/notificaciones/credito/solicitud</code></li>
+                            <li><code>POST /api/notificaciones/compra/verificacion-pendiente</code></li>
+                            <li><code>GET /api/notificaciones/estado</code> - Ver estado</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/notificaciones-sse.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let sseGeneral = null;
+        let sseCredito = null;
+        let sseCompra = null;
+
+        function conectarGeneral() {
+            if (sseGeneral && sseGeneral.estaConectado()) {
+                alert('Ya está conectado a general');
+                return;
+            }
+
+            sseGeneral = new NotificacionesSse('general');
+
+            sseGeneral.on('connect', () => {
+                updateStatus('general', true);
+                updateEstado('general', 'CONECTADO');
+                agregarLog('✓ Conectado a SSE General', 'info');
+            });
+
+            sseGeneral.on('notificacion', (notif) => {
+                agregarLog(`[${notif.tipo}] ${notif.titulo}: ${notif.mensaje}`, notif.severidad.toLowerCase());
+            });
+
+            sseGeneral.on('disconnect', () => {
+                updateStatus('general', false);
+                updateEstado('general', 'DESCONECTADO');
+                agregarLog('✗ Desconectado de SSE General', 'error');
+            });
+
+            sseGeneral.on('error', (error) => {
+                updateEstado('general', 'ERROR');
+                agregarLog(`Error SSE General: ${error}`, 'error');
+            });
+
+            sseGeneral.conectar();
+        }
+
+        function conectarCredito() {
+            if (sseCredito && sseCredito.estaConectado()) {
+                alert('Ya está conectado a crédito');
+                return;
+            }
+
+            sseCredito = new NotificacionesSse('credito');
+
+            sseCredito.on('connect', () => {
+                updateStatus('credito', true);
+                updateEstado('credito', 'CONECTADO');
+                agregarLog('✓ Conectado a SSE de Crédito', 'info');
+            });
+
+            sseCredito.on('notificacion', (notif) => {
+                agregarLog(`[${notif.tipo}] ${notif.titulo}: ${notif.mensaje}`, notif.severidad.toLowerCase());
+            });
+
+            sseCredito.on('disconnect', () => {
+                updateStatus('credito', false);
+                updateEstado('credito', 'DESCONECTADO');
+                agregarLog('✗ Desconectado de SSE de Crédito', 'error');
+            });
+
+            sseCredito.on('error', (error) => {
+                updateEstado('credito', 'ERROR');
+                agregarLog(`Error SSE Crédito: ${error}`, 'error');
+            });
+
+            sseCredito.conectar();
+        }
+
+        function conectarCompras() {
+            if (sseCompra && sseCompra.estaConectado()) {
+                alert('Ya está conectado a compras');
+                return;
+            }
+
+            sseCompra = new NotificacionesSse('compra');
+
+            sseCompra.on('connect', () => {
+                updateStatus('compras', true);
+                updateEstado('compra', 'CONECTADO');
+                agregarLog('✓ Conectado a SSE de Compras', 'info');
+            });
+
+            sseCompra.on('notificacion', (notif) => {
+                agregarLog(`[${notif.tipo}] ${notif.titulo}: ${notif.mensaje}`, notif.severidad.toLowerCase());
+            });
+
+            sseCompra.on('disconnect', () => {
+                updateStatus('compras', false);
+                updateEstado('compra', 'DESCONECTADO');
+                agregarLog('✗ Desconectado de SSE de Compras', 'error');
+            });
+
+            sseCompra.on('error', (error) => {
+                updateEstado('compra', 'ERROR');
+                agregarLog(`Error SSE Compra: ${error}`, 'error');
+            });
+
+            sseCompra.conectar();
+        }
+
+        function desconectarTodo() {
+            if (sseGeneral) sseGeneral.desconectar();
+            if (sseCredito) sseCredito.desconectar();
+            if (sseCompra) sseCompra.desconectar();
+        }
+
+        function updateStatus(tipo, conectado) {
+            const elemento = document.getElementById(`status-${tipo}`);
+            if (conectado) {
+                elemento.textContent = '● Conectado';
+                elemento.className = 'status-badge status-conectado';
+            } else {
+                elemento.textContent = '● Desconectado';
+                elemento.className = 'status-badge status-desconectado';
+            }
+        }
+
+        function updateEstado(tipo, estado) {
+            const elemento = document.getElementById(`estado-${tipo}`);
+            elemento.textContent = estado;
+            
+            if (estado === 'CONECTADO') {
+                elemento.className = 'badge bg-success';
+            } else if (estado === 'DESCONECTADO') {
+                elemento.className = 'badge bg-danger';
+            } else if (estado === 'ERROR') {
+                elemento.className = 'badge bg-warning';
+            }
+        }
+
+        function agregarLog(mensaje, tipo = 'info') {
+            const logDiv = document.getElementById('notificaciones-log');
+            const item = document.createElement('div');
+            item.className = `notificacion-item notificacion-${tipo}`;
+
+            const timestamp = new Date().toLocaleTimeString();
+            item.innerHTML = `
+                <div class="timestamp">${timestamp}</div>
+                <div>${mensaje}</div>
+            `;
+
+            logDiv.appendChild(item);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function enviarPrueba() {
+            fetch('/api/notificaciones/prueba', { method: 'POST' })
+                .then(() => agregarLog('Notificación de prueba enviada', 'info'))
+                .catch(err => agregarLog(`Error: ${err}`, 'error'));
+        }
+
+        function notificarSolicitudCredito() {
+            const params = new URLSearchParams({
+                solicitudId: Math.floor(Math.random() * 1000),
+                clienteId: Math.floor(Math.random() * 100),
+                monto: (Math.random() * 50000 + 5000).toFixed(2),
+                nombreCliente: 'Cliente Ejemplo'
+            });
+
+            fetch(`/api/notificaciones/credito/solicitud?${params}`, { method: 'POST' })
+                .then(() => agregarLog('Solicitud de crédito notificada', 'warning'))
+                .catch(err => agregarLog(`Error: ${err}`, 'error'));
+        }
+
+        function notificarAprobacionCredito() {
+            const params = new URLSearchParams({
+                solicitudId: Math.floor(Math.random() * 1000),
+                clienteId: Math.floor(Math.random() * 100),
+                monto: (Math.random() * 50000 + 5000).toFixed(2),
+                nombreCliente: 'Cliente Ejemplo'
+            });
+
+            fetch(`/api/notificaciones/credito/aprobada?${params}`, { method: 'POST' })
+                .then(() => agregarLog('Aprobación de crédito notificada', 'success'))
+                .catch(err => agregarLog(`Error: ${err}`, 'error'));
+        }
+
+        function notificarRechazoCredito() {
+            const params = new URLSearchParams({
+                solicitudId: Math.floor(Math.random() * 1000),
+                clienteId: Math.floor(Math.random() * 100),
+                motivo: 'Límite de crédito excedido'
+            });
+
+            fetch(`/api/notificaciones/credito/rechazada?${params}`, { method: 'POST' })
+                .then(() => agregarLog('Rechazo de crédito notificado', 'error'))
+                .catch(err => agregarLog(`Error: ${err}`, 'error'));
+        }
+
+        function notificarVerificacionCompra() {
+            const params = new URLSearchParams({
+                compraId: Math.floor(Math.random() * 1000),
+                clienteId: Math.floor(Math.random() * 100),
+                monto: (Math.random() * 5000 + 100).toFixed(2),
+                nombreProducto: 'Producto Ejemplo'
+            });
+
+            fetch(`/api/notificaciones/compra/verificacion-pendiente?${params}`, { method: 'POST' })
+                .then(() => agregarLog('Verificación de compra notificada', 'warning'))
+                .catch(err => agregarLog(`Error: ${err}`, 'error'));
+        }
+
+        function notificarAutorizacionCompra() {
+            const params = new URLSearchParams({
+                compraId: Math.floor(Math.random() * 1000),
+                clienteId: Math.floor(Math.random() * 100),
+                monto: (Math.random() * 5000 + 100).toFixed(2),
+                nombreProducto: 'Producto Ejemplo'
+            });
+
+            fetch(`/api/notificaciones/compra/autorizada?${params}`, { method: 'POST' })
+                .then(() => agregarLog('Autorización de compra notificada', 'success'))
+                .catch(err => agregarLog(`Error: ${err}`, 'error'));
+        }
+
+        function notificarRechazoCompra() {
+            const params = new URLSearchParams({
+                compraId: Math.floor(Math.random() * 1000),
+                clienteId: Math.floor(Math.random() * 100),
+                motivo: 'Stock insuficiente'
+            });
+
+            fetch(`/api/notificaciones/compra/rechazada?${params}`, { method: 'POST' })
+                .then(() => agregarLog('Rechazo de compra notificado', 'error'))
+                .catch(err => agregarLog(`Error: ${err}`, 'error'));
+        }
+
+        function limpiarLogs() {
+            document.getElementById('notificaciones-log').innerHTML = '';
+            agregarLog('Logs limpios', 'info');
+        }
+
+        // Solicitar permisos de notificación del navegador
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    </script>
+</body>
+</html>

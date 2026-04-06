@@ -7,15 +7,15 @@ import lombok.Setter;
 
 public class ClienteDto {
 
-    private ClienteDto() {}
+    private ClienteDto() {
+    }
 
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class Post {
+    public static class Post extends Put {
         protected String nombre;
-        protected Integer tipoCliente;
-        protected Float limiteCredito;
+
     }
 
     @Getter
@@ -30,6 +30,14 @@ public class ClienteDto {
             this.limiteCredito = c.getLimiteCredito();
             this.saldoCredito = c.getSaldoCredito();
         }
+    }
+
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public static class Put {
+        protected Integer tipoCliente;
+        protected Float limiteCredito;
     }
 
 }
