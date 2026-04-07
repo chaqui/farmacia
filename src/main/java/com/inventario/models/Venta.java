@@ -45,7 +45,7 @@ public class Venta {
         @Column(nullable = false)
         private LocalDate fecha;
 
-        @Column(nullable= true)
+        @Column(nullable= true, name = "cliente_nombre")
         private String nombreCliente;
 
         @Enumerated(EnumType.STRING)

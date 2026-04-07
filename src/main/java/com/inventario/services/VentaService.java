@@ -16,8 +16,10 @@ import com.inventario.models.Cliente;
 import com.inventario.repository.VentaRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
 
 @Service
+@Log4j2
 public class VentaService {
 
     protected final VentaRepository ventaRepository;
@@ -42,18 +44,22 @@ public class VentaService {
 
     @Transactional(rollbackOn = Exception.class)
     public void crearVenta(VentaDto.Post ventaDto) throws HttpException {
-        Cliente cliente = this.clienteService.obtenerClientePorId(ventaDto.getClienteId());
+        Cliente cliente = null;
+        if(ventaDto.getClienteId() != null) {
+             cliente = this.clienteService.obtenerClientePorId(ventaDto.getClienteId());
+        }
 
         Venta venta = new Venta(ventaDto, cliente);
+        log.info("Creando venta para cliente: " + (cliente != null ? cliente.getNombre() : ventaDto.getNombreCliente()) + ", Total: " + venta.getTotal());
         this.ventaRepository.save(venta);
         this.agregarSubdetallesSinSucursal(venta, ventaDto.getDetalles());
 
         // Notificar creación de venta
         notificacionService.notificarVerificacionVenta(
                 venta.getId(),
-                cliente.getId(),
+                cliente != null ? cliente.getId() : null,
                 venta.getTotal().doubleValue(),
-                cliente.getNombre()
+                cliente != null ? cliente.getNombre() : ventaDto.getNombreCliente()
         );
     }
 

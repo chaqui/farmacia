@@ -18,6 +18,7 @@ import com.inventario.services.VentaStateService;
 import com.inventario.constants.EstadoVenta;
 
 import jakarta.validation.Valid;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("/ventas")
+@Log4j2
 public class VentaController {
 
     private final VentaService ventaService;
