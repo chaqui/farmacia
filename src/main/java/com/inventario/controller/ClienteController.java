@@ -5,14 +5,18 @@ import com.inventario.exception.HttpException;
 import com.inventario.models.Cliente;
 import com.inventario.services.ClienteService;
 import jakarta.validation.Valid;
+import lombok.extern.log4j.Log4j2;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
-@RequestMapping("/api/clientes")
+@RequestMapping("/clientes")
+@Log4j2
 public class ClienteController {
 
     private final ClienteService clienteService;
@@ -23,7 +27,7 @@ public class ClienteController {
 
     @GetMapping
     public List<ClienteDto.Get> list() {
-        return clienteService.obtenerTodos().stream().map(ClienteDto.Get::new).collect(Collectors.toList());
+        return clienteService.obtenerTodos().stream().map(ClienteDto.Get::new).toList();
     }
 
     @PostMapping
@@ -34,6 +38,15 @@ public class ClienteController {
         return ResponseEntity.ok(new ClienteDto.Get(saved));
     }
 
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ClienteDto.Get> searchByName(@RequestParam(name = "q", required = false) String q) {
+        log.info("Buscando clientes por nombre: " + q);
+        return clienteService.obtenerClientesPorNombre(q)
+                .stream()
+                .map(ClienteDto.Get::new)
+                .toList();
+    }
     @GetMapping("/{id}")
     public ResponseEntity<ClienteDto.Get> obtenerCliente(@PathVariable Integer id) throws HttpException {
         Cliente cliente = clienteService.obtenerClientePorId(id);

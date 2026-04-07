@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,6 +38,15 @@ public class Credito {
     @ManyToOne
     @JoinColumn(name = "venta_id", nullable = true)
     private Venta venta;
+
+    @OneToMany(mappedBy = "credito", cascade = CascadeType.ALL)
+    private java.util.List<PagoCredito> pagos = new java.util.ArrayList<>();
+
+    public Float getSaldoPendiente() {
+        float totalPagos = 0f;
+        for (PagoCredito p : pagos) totalPagos += p.getMonto();
+        return this.monto - totalPagos;
+    }
 
     public Credito(Float monto, LocalDate fecha, Cliente cliente) {
         this.monto = monto;

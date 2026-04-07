@@ -58,8 +58,6 @@ public class VentaStateService extends VentaService {
 
         venta = this.ventaRepository.save(venta);
 
-        // Notificar verificación de venta
-
         // Si NO es crédito (esCredito=false o montoCredito=0), autorizar
         // automáticamente
         if (!ventaTieneCredito) {
@@ -107,9 +105,6 @@ public class VentaStateService extends VentaService {
 
         Float cantidadACredito = Boolean.TRUE.equals(dtoVerificar.getEsCredito()) ? venta.getTotal()
                 : dtoVerificar.getMontoCredito();
-        Float saldoCredito = cliente.getSaldoCredito();
-        Float limiteDisponible = (cliente.getLimiteCredito() != null ? cliente.getLimiteCredito() : 0f)
-                - saldoCredito;
 
         if (venta.getTotal() < cantidadACredito) {
             throw new HttpException(
@@ -117,7 +112,7 @@ public class VentaStateService extends VentaService {
                             + ", Solicitado a crédito: " + cantidadACredito,
                     400);
         }
-
+        Float limiteDisponible = cliente.getCreditoDisponible();
         if (cantidadACredito > limiteDisponible) {
             throw new HttpException(
                     "Crédito insuficiente. Disponible: " + limiteDisponible + ", Solicitado: " + cantidadACredito,

@@ -54,6 +54,19 @@ public class Cliente {
         return total;
     }
 
+    public Float getCreditoDisponible() {
+        if (this.limiteCredito == null) return null;
+        float totalPendiente = 0f;
+        if (creditos != null) {
+            for (Credito c : creditos) {
+                if (c == null) continue;
+                Float saldo = c.getSaldoPendiente();
+                if (saldo != null) totalPendiente += saldo;
+            }
+        }
+        return this.limiteCredito - totalPendiente;
+    }
+
     public Cliente(ClienteDto.Post dto) {
         this.nombre = dto.getNombre();
         this.tipoCliente = dto.getTipoCliente();

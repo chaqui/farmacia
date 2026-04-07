@@ -24,6 +24,8 @@ public class CreditoDto {
     @Getter
     public static class Get extends Post {
         private Integer id;
+        private Float saldoPendiente;
+        private Integer pagosCount;
 
         public Get(Credito c) {
             this.id = c.getId();
@@ -31,6 +33,8 @@ public class CreditoDto {
             this.fecha = c.getFecha();
             this.clienteId = c.getCliente().getId();
             this.ventaId = c.getVenta() != null ? c.getVenta().getId() : null;
+            this.saldoPendiente = c.getSaldoPendiente();
+            this.pagosCount = c.getPagos() != null ? c.getPagos().size() : 0;
         }
     }
 

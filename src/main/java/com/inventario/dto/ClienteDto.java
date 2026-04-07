@@ -28,7 +28,7 @@ public class ClienteDto {
             this.nombre = c.getNombre();
             this.tipoCliente = c.getTipoCliente();
             this.limiteCredito = c.getLimiteCredito();
-            this.saldoCredito = c.getSaldoCredito();
+            this.saldoCredito = c.getCreditoDisponible();
         }
     }
 

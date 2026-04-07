@@ -1,6 +1,8 @@
 package com.inventario.config;
 
 import com.inventario.models.Categoria;
+import com.inventario.models.Compra;
+import com.inventario.models.DetalleCompra;
 import com.inventario.models.Fotografia;
 import com.inventario.models.Lote;
 import com.inventario.models.Producto;
@@ -9,12 +11,15 @@ import com.inventario.repository.CategoriaRepository;
 import com.inventario.repository.FotografiaRepository;
 import com.inventario.repository.LoteRepository;
 import com.inventario.repository.ProductoRepository;
+import com.inventario.repository.CompraRepository;
+import com.inventario.repository.DetalleCompraRepository;
 import com.inventario.repository.ProveedorRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Random;
 
 @Component
@@ -25,17 +30,23 @@ public class DataInitializer implements CommandLineRunner {
     private final ProveedorRepository proveedorRepository;
     private final ProductoRepository productoRepository;
     private final LoteRepository loteRepository;
+    private final CompraRepository compraRepository;
+    private final DetalleCompraRepository detalleCompraRepository;
     private final FotografiaRepository fotografiaRepository;
 
     public DataInitializer(CategoriaRepository categoriaRepository,
                            ProveedorRepository proveedorRepository,
                            ProductoRepository productoRepository,
                            LoteRepository loteRepository,
+                           CompraRepository compraRepository,
+                           DetalleCompraRepository detalleCompraRepository,
                            FotografiaRepository fotografiaRepository) {
         this.categoriaRepository = categoriaRepository;
         this.proveedorRepository = proveedorRepository;
         this.productoRepository = productoRepository;
         this.loteRepository = loteRepository;
+        this.compraRepository = compraRepository;
+        this.detalleCompraRepository = detalleCompraRepository;
         this.fotografiaRepository = fotografiaRepository;
     }
 
@@ -88,6 +99,18 @@ public class DataInitializer implements CommandLineRunner {
             lote.setFechaVencimiento(LocalDate.now().plusYears(1));
             lote.setProducto(p);
             loteRepository.save(lote);
+
+            // create an initial compra + detalleCompra to give the lote an initial stock
+            try {
+                Compra compra = new Compra();
+                compra.setProveedor(proveedor);
+                compra.setFecha(Date.from(java.time.Instant.now()));
+                compra = compraRepository.save(compra);
+
+                long cantidadInicial = 5 + rnd.nextInt(46); // 5..50 unidades
+                DetalleCompra detalle = new DetalleCompra(compra, lote, cantidadInicial);
+                detalleCompraRepository.save(detalle);
+            } catch (Exception ignore) {}
 
             // add a simple fotografia record if repository exists
             try {

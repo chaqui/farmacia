@@ -38,13 +38,13 @@ public class ClienteService {
     }
 
     /**
-     * Obtener cliente por nombre
+     * Obtener clientes cuyo nombre contiene la cadena (case-insensitive)
      */
-    public Cliente obtenerClientePorNombre(String nombre) {
-        return this.clienteRepository.findAll().stream()
-                .filter(c -> c.getNombre().equalsIgnoreCase(nombre))
-                .findFirst()
-                .orElse(null);
+    public List<Cliente> obtenerClientesPorNombre(String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            return List.of();
+        }
+        return this.clienteRepository.findByNombreContainingIgnoreCase(nombre);
     }
 
     /**

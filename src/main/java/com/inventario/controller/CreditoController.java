@@ -4,6 +4,7 @@ import com.inventario.dto.CreditoDto;
 import com.inventario.exception.HttpException;
 import com.inventario.models.Credito;
 import com.inventario.services.CreditoService;
+import com.inventario.services.PagoCreditoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,11 @@ import java.util.stream.Collectors;
 public class CreditoController {
 
     private final CreditoService creditoService;
+    private final PagoCreditoService pagoCreditoService;
 
-    public CreditoController(CreditoService creditoService) {
+    public CreditoController(CreditoService creditoService, PagoCreditoService pagoCreditoService) {
         this.creditoService = creditoService;
+        this.pagoCreditoService = pagoCreditoService;
     }
 
     @GetMapping
@@ -58,6 +61,21 @@ public class CreditoController {
             return ResponseEntity.noContent().build();
         } catch (HttpException e) {
             return ResponseEntity.status(e.getCode() == null ? 400 : e.getCode()).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/pago")
+    public ResponseEntity<?> registrarPago(@PathVariable Integer id, @RequestBody java.util.Map<String, Object> body) {
+        try {
+            Object m = body.get("monto");
+            if (m == null) return ResponseEntity.badRequest().body("Falta el campo 'monto'");
+            Float monto = Float.valueOf(String.valueOf(m));
+            var pago = pagoCreditoService.registrarPago(id, monto);
+            return ResponseEntity.ok(java.util.Map.of("id", pago.getId(), "monto", pago.getMonto(), "fecha", pago.getFecha().toString()));
+        } catch (HttpException e) {
+            return ResponseEntity.status(e.getCode() == null ? 400 : e.getCode()).body(e.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body(ex.getMessage());
         }
     }
 
