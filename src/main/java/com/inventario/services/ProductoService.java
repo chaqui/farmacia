@@ -1,7 +1,6 @@
 package com.inventario.services;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
@@ -17,6 +16,7 @@ import com.inventario.models.Proveedor;
 import com.inventario.repository.ProductoRepository;
 import com.inventario.models.Categoria;
 
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -31,7 +31,12 @@ public class ProductoService {
     }
 
     @Transactional
-    public void crearProducto(ProductoDto.Post productoDto, Proveedor proveedor) {
+    public void crearProducto(ProductoDto.Post productoDto, Proveedor proveedor) throws HttpException  {
+        // validar porcentajes si se enviaron
+        Float pd = productoDto.getPorcentajeDescuento();
+        Float pg = productoDto.getPorcentajeGanancia();
+        
+        this.validarPorcentajes(pd, pg);
         Producto producto = new Producto(productoDto, proveedor);
         productoRepository.save(producto);
 
@@ -75,6 +80,12 @@ public class ProductoService {
         productoRepository.save(producto);
     }
 
+    private void validarPorcentajes(Float pd, Float pg) throws HttpException {
+        if (pd != null && (pd < 0f || pd > 100f)) throw new HttpException("porcentajeDescuento debe estar entre 0 y 100", 400);
+        if (pg != null && (pg < 0f || pg > 100f)) throw new HttpException("porcentajeGanancia debe estar entre 0 y 100", 400);
+        if (pd != null && pg != null && pd > pg) throw new HttpException("El porcentaje de descuento no puede ser mayor al de ganancia", 400);
+    }
+
     public List<ProductoDto.Get> obtenerProductos() {
         return productoRepository.findAll().stream().map(ProductoDto.Get::new).collect(Collectors.toList());
     }
@@ -99,8 +110,8 @@ public class ProductoService {
     }
 
     public List<ProductoDto.Get> buscarProductos(String query) {
-        return productoRepository.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(query, query)
-                .stream().map(ProductoDto.Get::new).toList();
+        return productoRepository.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCaseOrCodigoContainingIgnoreCase(query, query, query)
+            .stream().map(ProductoDto.Get::new).toList();
     }
 
     public List<ProductoDto.Get> buscarProductosRelacionados(Long id) throws HttpException {

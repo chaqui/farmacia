@@ -2,7 +2,6 @@ package com.inventario.services;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.inventario.dto.LoteDto;
@@ -21,14 +20,22 @@ public class LoteService {
 
     private final LoteRepository loteRepository;
     private final SucursalLoteService sucursalLoteService;
+    private final com.inventario.repository.ProductoRepository productoRepository;
 
-    @Autowired
-    public LoteService(LoteRepository loteRepository, SucursalLoteService sucursalLoteService) {
+    public LoteService(LoteRepository loteRepository, SucursalLoteService sucursalLoteService,
+                       com.inventario.repository.ProductoRepository productoRepository) {
         this.loteRepository = loteRepository;
         this.sucursalLoteService = sucursalLoteService;
+        this.productoRepository = productoRepository;
     }
 
     private Lote crearLote(LoteDto.POST loteDto, Producto producto) {
+        // If ubicacion was provided in the lote DTO, set it on the producto
+        if (loteDto != null && loteDto.getEstanteria() != null) {
+            producto.setEstanteria(loteDto.getEstanteria());
+            producto.setNivel(loteDto.getNivel());
+            productoRepository.save(producto);
+        }
         return loteRepository.save(new Lote(loteDto, producto));
     }
 
@@ -81,6 +88,17 @@ public class LoteService {
             throw new HttpException("No hay suficiente cantidad en el lote", 400);
         }
         return loteRepository.save(lote);
+    }
+
+    @Transactional
+    public void actualizarUbicacionLote(String loteId, LoteDto.UbicacionDto ubicacion) throws HttpException {
+        Lote lote = this.obtenerLote(loteId);
+        if (lote.getProducto() != null) {
+            var producto = lote.getProducto();
+            producto.setEstanteria(ubicacion.getEstanteria());
+            producto.setNivel(ubicacion.getNivel());
+            productoRepository.save(producto);
+        }
     }
 
 }

@@ -44,24 +44,24 @@ public class VentaStateService extends VentaService {
             throw new HttpException("La venta debe estar en estado CREADA para ser verificada", 400);
         }
 
-        boolean ventaTieneCredito = dtoVerificar.getEsCredito() || dtoVerificar.getMontoCredito() > 0f;
-        // Si es crédito, validar límite de crédito del cliente
+        boolean ventaTieneCredito = Boolean.TRUE.equals(dtoVerificar.getEsCredito()) || (dtoVerificar.getMontoCredito() != null && dtoVerificar.getMontoCredito() > 0f);
+        // Si es crédito, validar límite de crédito del cliente y asignar monto
         if (ventaTieneCredito) {
             this.verificarCredito(dtoVerificar, venta);
             if (dtoVerificar.getMontoCredito() != null && dtoVerificar.getMontoCredito() > 0f) {
                 venta.cambiarAVerificada(dtoVerificar.getMontoCredito());
             } else {
-                venta.cambiarAVerificada(ventaTieneCredito);
+                venta.cambiarAVerificada(true);
             }
-
+        } else {
+            // Venta al contado: marcar como VERIFICADA con esCredito = false
+            venta.cambiarAVerificada(false);
         }
 
         venta = this.ventaRepository.save(venta);
 
-        // Si NO es crédito (esCredito=false o montoCredito=0), autorizar
-        // automáticamente
+        // Si NO es crédito (esCredito=false o montoCredito=0), autorizar automáticamente
         if (!ventaTieneCredito) {
-
             venta = autorizarVenta(venta.getId());
         } else {
             this.notificacionService.notificarAutorizacionVenta(

@@ -86,7 +86,10 @@ public class DataInitializer implements CommandLineRunner {
             p.setDescripcion(generateDescripcion(i));
             p.setProveedor(proveedor);
             p.agregarCategoria(mecanica);
-            p.setImage("/images/mecanica/imagen" + i + ".jpg");
+            // sample location fields moved to Producto
+            p.setEstanteria("A" + (i % 10));
+            p.setNivel((i % 5) + 1);
+            p.setBodega("Bodega Central");
             productoRepository.save(p);
 
             // create a lote
@@ -98,6 +101,7 @@ public class DataInitializer implements CommandLineRunner {
             lote.setPrecioDescuento(lote.getPrecioVenta() * 0.9f); // 10% discount as default
             lote.setFechaVencimiento(LocalDate.now().plusYears(1));
             lote.setProducto(p);
+            // location now stored on producto
             loteRepository.save(lote);
 
             // create an initial compra + detalleCompra to give the lote an initial stock
@@ -115,7 +119,6 @@ public class DataInitializer implements CommandLineRunner {
             // add a simple fotografia record if repository exists
             try {
                 Fotografia f = new Fotografia();
-                f.setUrl(lote.getProducto().getImage());
                 f.setProducto(p);
                 fotografiaRepository.save(f);
             } catch (Exception ignore) {}

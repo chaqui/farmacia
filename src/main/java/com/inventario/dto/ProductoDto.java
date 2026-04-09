@@ -34,6 +34,22 @@ public class ProductoDto {
         @Positive
         protected Long idProveedor;
 
+        @Size(max = 100)
+        protected String codigo;
+
+        // porcentajes en 0..100
+        protected Float porcentajeDescuento;
+
+        protected Float porcentajeGanancia;
+
+        @Size(max = 20)
+        protected String estanteria;
+
+        protected Integer nivel;
+
+        @Size(max = 200)
+        protected String bodega;
+
         private List<@NotBlank @Size(max = 1000) String> fotografias;
 
         private List<@Positive Long> relacionadosIds;
@@ -46,7 +62,6 @@ public class ProductoDto {
     @AllArgsConstructor
     public static class Get extends Post {
         private Long id;
-        private String image;
         private Long stock;
         private String proveedor;
         private java.util.List<String> categorias;
@@ -56,9 +71,16 @@ public class ProductoDto {
             this.nombre = producto.getNombre();
             this.descripcion = producto.getDescripcion();
             this.stock = producto.getCantidad();
-            this.categorias = producto.getCategorias() != null ? producto.getCategorias().stream().map(c -> c.getNombre()).toList() : null;
-            this.image = producto.getImage();
+            this.categorias = producto.getCategorias() != null
+                    ? producto.getCategorias().stream().map(c -> c.getNombre()).toList()
+                    : null;
             this.proveedor = producto.getProveedor().getNombre();
+            this.codigo = producto.getCodigo();
+            this.porcentajeDescuento = producto.getPorcentajeDescuento();
+            this.porcentajeGanancia = producto.getPorcentajeGanancia();
+            this.estanteria = producto.getEstanteria();
+            this.nivel = producto.getNivel();
+            this.bodega = producto.getBodega();
         }
     }
 

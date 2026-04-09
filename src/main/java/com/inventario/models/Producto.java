@@ -36,6 +36,24 @@ public class Producto {
     @Column
     private String descripcion;
 
+    @Column(unique = true)
+    private String codigo;
+
+    @Column
+    private Float porcentajeDescuento;
+
+    @Column
+    private Float porcentajeGanancia;
+
+    @Column
+    private String estanteria;
+
+    @Column
+    private Integer nivel;
+
+    @Column
+    private String bodega;
+
     @ManyToMany
     @JoinTable(
         name = "producto_categoria",
@@ -44,11 +62,7 @@ public class Producto {
     )
     private List<Categoria> categorias = new ArrayList<>();
 
-    @Column
-    private String image;
 
-    @Column
-    private Date fechaVencimiento;
 
     @Column 
     private Integer cantidadMinima;
@@ -75,6 +89,14 @@ public class Producto {
         this.nombre = dto.getNombre();
         this.descripcion = dto.getDescripcion();
         this.proveedor = proveedor;
+        this.codigo = dto.getCodigo();
+        this.porcentajeDescuento = dto.getPorcentajeDescuento();
+        this.porcentajeGanancia = dto.getPorcentajeGanancia();
+        if (dto != null) {
+            this.estanteria = dto.getEstanteria();
+            this.nivel = dto.getNivel();
+            this.bodega = dto.getBodega();
+        }
     }
 
     public Long getCantidad() {

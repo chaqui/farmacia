@@ -23,6 +23,7 @@ import lombok.extern.log4j.Log4j2;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
@@ -122,7 +123,7 @@ public class VentaController {
      * - Se eliminan los DetalleVenta (liberan los productos bloqueados)
      * - Los productos vuelven al inventario disponible
      */
-    @PostMapping("/{ventaId}/cancelar")
+    @DeleteMapping("/{ventaId}/cancelar")
     @ResponseStatus(HttpStatus.OK)
     public VentaDto.GetSinSucursal cancelarVenta(
             @PathVariable Integer ventaId) throws HttpException {

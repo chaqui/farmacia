@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 
 import com.inventario.dto.ClienteDto;
 import com.inventario.exception.HttpException;
-import com.inventario.models.AutorizacionLimiteCredito;
 import com.inventario.models.Cliente;
 import com.inventario.repository.ClienteRepository;
 import org.springframework.transaction.annotation.Transactional;

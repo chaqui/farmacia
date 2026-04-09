@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/creditos")
+@RequestMapping("creditos")
 public class CreditoController {
 
     private final CreditoService creditoService;

@@ -1,0 +1,59 @@
+package com.inventario.controller;
+
+import com.inventario.services.PhotoService;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Collections;
+
+@RestController
+@RequestMapping("/photos")
+public class PhotoController {
+    private final PhotoService photoService;
+
+    public PhotoController(PhotoService photoService) {
+        this.photoService = photoService;
+    }
+
+    @PostMapping(value = "/upload", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
+        try {
+            String storedPath = photoService.store(file);
+            return ResponseEntity.ok(Collections.singletonMap("path", storedPath));
+        } catch (IOException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("error", ex.getMessage()));
+        }
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> download(@RequestParam("path") String path) {
+        try {
+            Resource resource = photoService.loadAsResource(path);
+            String contentType = null;
+            try {
+                contentType = Files.probeContentType(resource.getFile().toPath());
+            } catch (Exception ignored) {
+            }
+            if (contentType == null) contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } catch (Exception ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+}

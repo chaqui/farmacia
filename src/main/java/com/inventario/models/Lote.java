@@ -35,6 +35,9 @@ public class Lote {
     @Column
     private LocalDate fechaVencimiento;
 
+    @Column
+    // estanteria and nivel moved to Producto
+
     @ManyToOne
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;

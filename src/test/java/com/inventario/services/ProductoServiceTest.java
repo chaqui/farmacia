@@ -65,11 +65,16 @@ public class ProductoServiceTest {
 
         when(productoRepository.save(any(Producto.class))).thenAnswer(invocation -> {
             Producto p = invocation.getArgument(0);
-            if (p.getId() == null) p.setId(1L);
+            if (p.getId() == null)
+                p.setId(1L);
             return p;
         });
 
-        productoService.crearProducto(dto, proveedor);
+        try {
+            productoService.crearProducto(dto, proveedor);
+        } catch (HttpException e) {
+            e.printStackTrace();
+        }
 
         ArgumentCaptor<Producto> captor = ArgumentCaptor.forClass(Producto.class);
         verify(productoRepository, atLeastOnce()).save(captor.capture());

@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.inventario.constants.EstadoVenta;
 import com.inventario.models.Venta;
-import com.inventario.validation.EitherClienteIdOrNombre;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -23,7 +22,6 @@ public class VentaDto {
     @Getter
     @NoArgsConstructor
     @Setter
-    @EitherClienteIdOrNombre
     public static class Post {
 
 
@@ -91,9 +89,9 @@ public class VentaDto {
         private Float montoCredito;
 
         public GetSinSucursal(Venta venta) {
-            super(venta.getCliente().getId(), venta.getFecha());
+            super(venta.getCliente() != null ? venta.getCliente().getId() : null, venta.getFecha());
             this.id = venta.getId();
-            this.cliente = venta.getCliente().getNombre();
+            this.cliente = venta.getCliente() != null ? venta.getCliente().getNombre() : venta.getNombreCliente();
             this.total = venta.getTotal();
             this.estado = venta.getEstado();
             this.esCredito = venta.getEsCredito();
