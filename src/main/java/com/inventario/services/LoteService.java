@@ -31,11 +31,7 @@ public class LoteService {
 
     private Lote crearLote(LoteDto.POST loteDto, Producto producto) {
         // If ubicacion was provided in the lote DTO, set it on the producto
-        if (loteDto != null && loteDto.getEstanteria() != null) {
-            producto.setEstanteria(loteDto.getEstanteria());
-            producto.setNivel(loteDto.getNivel());
-            productoRepository.save(producto);
-        }
+
         return loteRepository.save(new Lote(loteDto, producto));
     }
 
@@ -90,15 +86,6 @@ public class LoteService {
         return loteRepository.save(lote);
     }
 
-    @Transactional
-    public void actualizarUbicacionLote(String loteId, LoteDto.UbicacionDto ubicacion) throws HttpException {
-        Lote lote = this.obtenerLote(loteId);
-        if (lote.getProducto() != null) {
-            var producto = lote.getProducto();
-            producto.setEstanteria(ubicacion.getEstanteria());
-            producto.setNivel(ubicacion.getNivel());
-            productoRepository.save(producto);
-        }
-    }
+   
 
 }

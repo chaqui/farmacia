@@ -164,6 +164,26 @@ public class NotificacionService {
     }
 
     /**
+     * Envía notificación de una nueva devolución de venta
+     */
+    public void notificarDevolucion(Integer devolucionId, Integer ventaId) {
+        NotificacionDto notificacion = NotificacionDto.builder()
+                .tipo("DEVOLUCION_REGISTRADA")
+                .titulo("Nueva Devolución de Venta")
+                .mensaje(String.format("Se ha registrado una devolución para la venta ID: %d", ventaId))
+                .idRelacionado(devolucionId)
+                .timestamp(System.currentTimeMillis())
+                .severidad("INFO")
+                .requiereAccion(true)
+                .estado("PENDIENTE_PROCESAMIENTO")
+                .build();
+        
+        log.info("Notificando nueva devolución: {} - Venta: {}", devolucionId, ventaId);
+        
+        sseService.broadcastVenta(notificacion);
+    }
+
+    /**
      * Envía una notificación personalizada
      */
     public void enviarNotificacionPersonalizada(NotificacionDto notificacion) {

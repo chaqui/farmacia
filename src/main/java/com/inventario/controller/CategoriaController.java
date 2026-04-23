@@ -3,6 +3,7 @@ package com.inventario.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,8 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 
 import com.inventario.dto.CategoriaDto;
+import com.inventario.dto.ProductoDto;
 import com.inventario.models.Categoria;
 import com.inventario.services.CategoriaService;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 
 @RestController
 @RequestMapping("/categorias")
@@ -45,5 +49,12 @@ public class CategoriaController {
     public void eliminar(@PathVariable Long id) {
         categoriaService.eliminarCategoria(id);
     }
+
+    @GetMapping("/{id}/productos")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ProductoDto.Get> obtenerProductos(@PathVariable Long id) {
+        return categoriaService.obtenerProductos(id);
+    }
+    
 
 }

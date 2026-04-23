@@ -3,11 +3,15 @@ package com.inventario.services;
 import org.springframework.stereotype.Service;
 
 import com.inventario.dto.ClienteDto;
+import com.inventario.dto.ClienteDto.Get;
 import com.inventario.exception.HttpException;
+import com.inventario.models.AutorizacionLimiteCredito;
 import com.inventario.models.Cliente;
+import com.inventario.models.Credito;
 import com.inventario.repository.ClienteRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 @Service
 public class ClienteService {
@@ -106,6 +110,16 @@ public class ClienteService {
     public void eliminarCliente(Integer id) throws HttpException {
         Cliente cliente = obtenerClientePorId(id);
         this.clienteRepository.delete(cliente);
+    }
+
+    public Collection<Credito> obtenerCreditos(Integer id) throws HttpException {
+       Cliente cliente = obtenerClientePorId(id);
+         return cliente.getCreditos();
+    }
+
+    public Collection<AutorizacionLimiteCredito> obtenerAutorizaciones(Integer id) throws HttpException {
+        Cliente cliente = obtenerClientePorId(id);
+        return cliente.getAutorizaciones();
     }
 
 }

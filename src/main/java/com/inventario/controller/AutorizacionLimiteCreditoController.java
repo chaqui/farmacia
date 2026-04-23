@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/autorizaciones-limite-credito")
+@RequestMapping("/autorizaciones-limite-credito")
 public class AutorizacionLimiteCreditoController {
 
     private final AutorizacionLimiteCreditoService autorizacionService;
@@ -32,16 +32,7 @@ public class AutorizacionLimiteCreditoController {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Obtener historial de autorizaciones de un cliente
-     */
-    @GetMapping("/cliente/{clienteId}")
-    public List<AutorizacionLimiteCreditoDto.Get> obtenerHistorialCliente(@PathVariable Integer clienteId) throws HttpException {
-        return autorizacionService.obtenerHistorialCliente(clienteId)
-                .stream()
-                .map(AutorizacionLimiteCreditoDto.Get::new)
-                .collect(Collectors.toList());
-    }
+
 
     /**
      * Obtener autorización por ID

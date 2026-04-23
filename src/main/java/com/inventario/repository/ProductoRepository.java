@@ -19,4 +19,5 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     public java.util.List<Producto> findDistinctByCategoriasIn(java.util.Collection<Categoria> categorias);
 
+    public List<Producto> findByMarcaId(Integer marcaId);
 }

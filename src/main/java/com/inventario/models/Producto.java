@@ -71,6 +71,10 @@ public class Producto {
     @JoinColumn(name = "proveedor_id", nullable = false)
     private Proveedor proveedor;
 
+    @ManyToOne
+    @JoinColumn(name = "marca_id", nullable = true)
+    private Marca marca;
+
     @OneToMany(mappedBy = "producto")
     private List<Lote> lotes = new ArrayList<>();
 

@@ -2,6 +2,7 @@ package com.inventario.services;
 
 import org.springframework.stereotype.Service;
 
+import com.inventario.dto.ProductoDto;
 import com.inventario.models.Categoria;
 import com.inventario.repository.CategoriaRepository;
 import java.util.List;
@@ -38,5 +39,10 @@ public class CategoriaService {
 
     public void eliminarCategoria(Long id) {
         categoriaRepository.deleteById(id);
+    }
+
+    public List<ProductoDto.Get> obtenerProductos(Long id) {
+        Categoria c = obtenerCategoria(id);
+        return c.getProductos().stream().map(ProductoDto.Get::new).toList();
     }
 }

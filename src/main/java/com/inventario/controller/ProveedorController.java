@@ -2,6 +2,7 @@ package com.inventario.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.inventario.dto.ProductoDto;
 import com.inventario.dto.ProveedorDto;
+import com.inventario.dto.MarcaDto;
 import com.inventario.exception.HttpException;
 import com.inventario.services.ProveedorService;
 
@@ -52,6 +54,25 @@ public class ProveedorController {
     public List<ProductoDto.Get> obtenerProductos(@PathVariable Long id) throws HttpException {
         return proveedorService.obtenerProductos(id);
 
+    }
+
+    @GetMapping("/{id}/marcas")
+    public List<MarcaDto.Get> obtenerMarcas(@PathVariable Long id) throws HttpException {
+        return proveedorService.obtenerMarcas(id);
+    }
+
+    @PostMapping("/{proveedorId}/marcas/{marcaId}")
+    public ResponseEntity<Void> asignarMarcaAProveedor(@PathVariable Long proveedorId,
+            @PathVariable Integer marcaId) throws HttpException {
+        proveedorService.asignarMarcaAProveedor(proveedorId, marcaId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{proveedorId}/marcas/{marcaId}")
+    public ResponseEntity<Void> removerMarcaDeProveedor(@PathVariable Long proveedorId,
+            @PathVariable Integer marcaId) throws HttpException {
+        proveedorService.removerMarcaDeProveedor(proveedorId, marcaId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

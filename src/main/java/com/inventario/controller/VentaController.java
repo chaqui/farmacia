@@ -8,12 +8,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inventario.dto.DevolucionVentaDto;
 import com.inventario.dto.VentaDetalleDto;
 import com.inventario.dto.VentaDto;
 import com.inventario.exception.HttpException;
+import com.inventario.models.DevolucionVenta;
 import com.inventario.models.Venta;
+import com.inventario.services.DevolucionVentaService;
 import com.inventario.services.VentaService;
 import com.inventario.services.VentaStateService;
+import com.inventario.services.TicketPdfService;
 
 import com.inventario.constants.EstadoVenta;
 
@@ -22,7 +26,10 @@ import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -33,10 +40,14 @@ public class VentaController {
 
     private final VentaService ventaService;
     private final VentaStateService ventaStateService;
+    private final TicketPdfService ticketPdfService;
+    private final DevolucionVentaService devolucionVentaService;
 
-    public VentaController(VentaService ventaService, VentaStateService ventaStateService) {
+    public VentaController(VentaService ventaService, VentaStateService ventaStateService, TicketPdfService ticketPdfService, DevolucionVentaService devolucionVentaService) {
         this.ventaService = ventaService;
         this.ventaStateService = ventaStateService;
+        this.ticketPdfService = ticketPdfService;
+        this.devolucionVentaService = devolucionVentaService;
     }
 
     @PostMapping
@@ -185,6 +196,77 @@ public class VentaController {
     @ResponseStatus(HttpStatus.OK)
     public List<VentaDetalleDto.Get> obtenerDetallesVenta(@PathVariable Integer id) throws HttpException {
         return this.ventaService.obtenerDetallesVenta(id);
+    }
+
+    /**
+     * Descargar ticket de venta en formato PDF
+     * Formato optimizado para impresora térmica (80mm)
+     * 
+     * Parámetro:
+     * - ventaId: ID de la venta
+     * 
+     * Retorna:
+     * - PDF con el ticket de venta
+     * 
+     * Ejemplo:
+     * GET /ventas/1/descargar-ticket
+     */
+    @GetMapping("/{ventaId}/descargar-ticket")
+    public ResponseEntity<byte[]> descargarTicket(@PathVariable Integer ventaId) throws HttpException {
+        byte[] pdfBytes = ticketPdfService.generarTicketVenta(ventaId);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "ticket-venta-" + ventaId + ".pdf");
+        headers.setContentLength(pdfBytes.length);
+        
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
+    }
+
+    /**
+     * Crear una devolución para una venta específica
+     * 
+     * Parámetro:
+     * - ventaId: ID de la venta
+     * 
+     * Body:
+     * - fecha: fecha de la devolución
+     * - motivo: motivo de la devolución (opcional)
+     * - detalles: lista de detalles a devolver
+     *   - detalleVentaId: ID del detalle de venta
+     *   - cantidad: cantidad a devolver
+     *   - razonDevolucion: razón específica del detalle (opcional)
+     * 
+     * Ejemplo:
+     * POST /ventas/1/devolucion
+     */
+    @PostMapping("/{ventaId}/devolucion")
+    @ResponseStatus(HttpStatus.CREATED)
+    public DevolucionVentaDto.Get crearDevolucion(
+            @PathVariable Integer ventaId,
+            @Valid @RequestBody DevolucionVentaDto.Post devolucionDto) throws HttpException {
+        // Asegurarse de que el ID de venta en el DTO coincida con el path
+        devolucionDto.setVentaId(ventaId);
+        DevolucionVenta devolucion = devolucionVentaService.crearDevolucion(devolucionDto);
+        return new DevolucionVentaDto.Get(devolucion);
+    }
+
+    /**
+     * Obtener todas las devoluciones de una venta específica
+     * 
+     * Parámetro:
+     * - ventaId: ID de la venta
+     * 
+     * Ejemplo:
+     * GET /ventas/1/devoluciones
+     */
+    @GetMapping("/{ventaId}/devoluciones")
+    @ResponseStatus(HttpStatus.OK)
+    public List<DevolucionVentaDto.Get> obtenerDevolucionesPorVenta(@PathVariable Integer ventaId)
+            throws HttpException {
+        return devolucionVentaService.obtenerDevolucionesPorVenta(ventaId);
     }
 
 }

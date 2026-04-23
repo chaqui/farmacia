@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class PagoCreditoService {
@@ -37,6 +38,12 @@ public class PagoCreditoService {
         creditoRepository.save(credito);
 
         return saved;
+    }
+
+    public List<PagoCredito> obtenerPagosPorCredito(Integer creditoId) throws HttpException {
+        Credito credito = creditoRepository.findById(creditoId)
+                .orElseThrow(() -> new HttpException("Crédito no encontrado", 404));
+        return credito.getPagos();
     }
 
 }

@@ -1,6 +1,9 @@
 package com.inventario.controller;
 
 import com.inventario.services.PhotoService;
+
+import lombok.extern.log4j.Log4j2;
+
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,11 +22,13 @@ import java.util.Collections;
 
 @RestController
 @RequestMapping("/photos")
+@Log4j2
 public class PhotoController {
     private final PhotoService photoService;
 
     public PhotoController(PhotoService photoService) {
         this.photoService = photoService;
+        log.warn("✓✓✓ PhotoController INICIALIZADO ✓✓✓");
     }
 
     @PostMapping(value = "/upload", consumes = {"multipart/form-data"})
@@ -38,7 +43,11 @@ public class PhotoController {
     }
 
     @GetMapping("/download")
-    public ResponseEntity<Resource> download(@RequestParam("path") String path) {
+    public ResponseEntity<Resource> download(@RequestParam(name = "path", required = false) String path) {
+        System.out.println("@@@ ENDPOINT DOWNLOAD LLAMADO - path: " + path);
+        log.warn("@@@ ENDPOINT DOWNLOAD LLAMADO - path: " + path);
+        log.debug("=== DOWNLOAD ENDPOINT LLAMADO ===");
+        log.info("Descargando foto desde path: " + path);
         try {
             Resource resource = photoService.loadAsResource(path);
             String contentType = null;

@@ -8,10 +8,13 @@ import org.springframework.stereotype.Service;
 
 import com.inventario.dto.ProductoDto;
 import com.inventario.dto.ProveedorDto;
+import com.inventario.dto.MarcaDto;
 import com.inventario.dto.ProductoDto.Post;
 import com.inventario.exception.HttpException;
 import com.inventario.models.Proveedor;
+import com.inventario.models.Marca;
 import com.inventario.repository.ProveedorRepository;
+import com.inventario.repository.MarcaRepository;
 
 @Service
 public class ProveedorService {
@@ -21,6 +24,9 @@ public class ProveedorService {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private MarcaRepository marcaRepository;
 
     /**
      * Crea un proveedor
@@ -93,6 +99,59 @@ public class ProveedorService {
     public List<ProductoDto.Get> obtenerProductos(Long id) throws HttpException {
         Proveedor proveedor = this.obtenerProveedor(id);
         return proveedor.getProductos().stream().map(ProductoDto.Get::new).collect(Collectors.toList());
+    }
+
+    /**
+     * Obtiene las marcas de un proveedor
+     * @param id id del proveedor
+     * @return lista de marcas
+     * @throws HttpException si el proveedor no existe
+     */
+    public List<MarcaDto.Get> obtenerMarcas(Long id) throws HttpException {
+        Proveedor proveedor = this.obtenerProveedor(id);
+        return proveedor.getMarcas().stream()
+                .map(marca -> {
+                    MarcaDto.Get dto = new MarcaDto.Get();
+                    dto.setId(marca.getId());
+                    dto.setNombre(marca.getNombre());
+                    dto.setDescripcion(marca.getDescripcion());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Asigna una marca a un proveedor
+     * @param proveedorId id del proveedor
+     * @param marcaId id de la marca
+     * @throws HttpException si el proveedor o la marca no existen
+     */
+    public void asignarMarcaAProveedor(Long proveedorId, Integer marcaId) throws HttpException {
+        Proveedor proveedor = this.obtenerProveedor(proveedorId);
+        Marca marca = marcaRepository.findById(marcaId)
+                .orElseThrow(() -> new HttpException("Marca no encontrada"));
+
+        if (!proveedor.getMarcas().contains(marca)) {
+            proveedor.getMarcas().add(marca);
+            proveedorRepository.save(proveedor);
+        }
+    }
+
+    /**
+     * Remueve una marca de un proveedor
+     * @param proveedorId id del proveedor
+     * @param marcaId id de la marca
+     * @throws HttpException si el proveedor o la marca no existen
+     */
+    public void removerMarcaDeProveedor(Long proveedorId, Integer marcaId) throws HttpException {
+        Proveedor proveedor = this.obtenerProveedor(proveedorId);
+        Marca marca = marcaRepository.findById(marcaId)
+                .orElseThrow(() -> new HttpException("Marca no encontrada"));
+
+        if (proveedor.getMarcas().contains(marca)) {
+            proveedor.getMarcas().remove(marca);
+            proveedorRepository.save(proveedor);
+        }
     }
 
 }

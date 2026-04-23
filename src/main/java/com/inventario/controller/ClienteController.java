@@ -1,6 +1,8 @@
 package com.inventario.controller;
 
+import com.inventario.dto.AutorizacionLimiteCreditoDto;
 import com.inventario.dto.ClienteDto;
+import com.inventario.dto.CreditoDto;
 import com.inventario.exception.HttpException;
 import com.inventario.models.Cliente;
 import com.inventario.services.ClienteService;
@@ -12,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -79,5 +84,28 @@ public class ClienteController {
         clienteService.eliminarCliente(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{id}/creditos")
+    public List<CreditoDto.Get> obtenerCreditos(@PathVariable Integer id) throws HttpException {
+        List<CreditoDto.Get> creditos = clienteService.obtenerCreditos(id)
+                .stream()
+                .map(CreditoDto.Get::new)
+                .toList();
+        return creditos;
+    }
+
+    @GetMapping("/{id}/autorizaciones")
+    public List<AutorizacionLimiteCreditoDto.Get> obtenerAutorizaciones(@PathVariable Integer id) throws HttpException {
+        return clienteService.obtenerAutorizaciones(id)
+                .stream()
+                .map(AutorizacionLimiteCreditoDto.Get::new)
+                .toList();
+    }
+    
+
+    
+
+
+    
 
 }

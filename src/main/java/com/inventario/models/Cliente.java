@@ -37,6 +37,9 @@ public class Cliente {
     @OneToMany(mappedBy = "cliente")
     List<Credito> creditos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "cliente")
+    List<AutorizacionLimiteCredito> autorizaciones = new ArrayList<>();
+
     public Cliente(String nombre) {
         this.nombre = nombre;
     }

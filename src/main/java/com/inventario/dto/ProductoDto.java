@@ -18,8 +18,21 @@ public class ProductoDto {
     @Getter
     @Setter
     @NoArgsConstructor
+    public static class UbicacionDto {
+        @Size(max = 20)
+        protected String estanteria;
+
+        protected Integer nivel;
+
+        @Size(max = 200)
+        protected String bodega;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
     @AllArgsConstructor
-    public static class Post {
+    public static class Post extends UbicacionDto {
         @NotBlank
         @Size(max = 200)
         protected String nombre;
@@ -42,18 +55,12 @@ public class ProductoDto {
 
         protected Float porcentajeGanancia;
 
-        @Size(max = 20)
-        protected String estanteria;
-
-        protected Integer nivel;
-
-        @Size(max = 200)
-        protected String bodega;
-
-        private List<@NotBlank @Size(max = 1000) String> fotografias;
+        protected List<@NotBlank @Size(max = 1000) String> fotografias;
 
         private List<@Positive Long> relacionadosIds;
 
+        @Positive
+        protected Integer marcaId;
     }
 
     @Getter
@@ -64,17 +71,17 @@ public class ProductoDto {
         private Long id;
         private Long stock;
         private String proveedor;
-        private java.util.List<String> categorias;
+        private String marca;
 
         public Get(Producto producto) {
             this.id = producto.getId();
             this.nombre = producto.getNombre();
             this.descripcion = producto.getDescripcion();
             this.stock = producto.getCantidad();
-            this.categorias = producto.getCategorias() != null
-                    ? producto.getCategorias().stream().map(c -> c.getNombre()).toList()
-                    : null;
+            this.fotografias = producto.getFotografias().stream().map(f -> f.getUrl()).toList();
             this.proveedor = producto.getProveedor().getNombre();
+            this.marca = producto.getMarca() != null ? producto.getMarca().getNombre() : null;
+            this.marcaId = producto.getMarca() != null ? producto.getMarca().getId() : null;
             this.codigo = producto.getCodigo();
             this.porcentajeDescuento = producto.getPorcentajeDescuento();
             this.porcentajeGanancia = producto.getPorcentajeGanancia();

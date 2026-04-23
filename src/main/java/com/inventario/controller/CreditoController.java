@@ -1,16 +1,27 @@
 package com.inventario.controller;
 
 import com.inventario.dto.CreditoDto;
+import com.inventario.dto.PagoCreditoDto;
 import com.inventario.exception.HttpException;
-import com.inventario.models.Credito;
+
+import com.inventario.models.PagoCredito;
 import com.inventario.services.CreditoService;
 import com.inventario.services.PagoCreditoService;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("creditos")
@@ -30,53 +41,45 @@ public class CreditoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CreditoDto.Get> get(@PathVariable Integer id) {
-        return creditoService.getById(id).map(CreditoDto.Get::new).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @ResponseStatus(HttpStatus.OK)
+    public CreditoDto.Get get(@PathVariable Integer id) {
+        return creditoService.getById(id).map(CreditoDto.Get::new).orElse(null);
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody CreditoDto.Post dto) {
-        try {
-            Credito saved = creditoService.create(dto);
-            return ResponseEntity.ok(new CreditoDto.Get(saved));
-        } catch (HttpException e) {
-            return ResponseEntity.status(e.getCode() == null ? 400 : e.getCode()).body(e.getMessage());
-        }
+    @ResponseStatus(HttpStatus.CREATED)
+    public void create(@Valid @RequestBody CreditoDto.Post dto) throws HttpException {
+
+        creditoService.create(dto);
+
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody CreditoDto.Post dto) {
-        try {
-            Credito saved = creditoService.update(id, dto);
-            return ResponseEntity.ok(new CreditoDto.Get(saved));
-        } catch (HttpException e) {
-            return ResponseEntity.status(e.getCode() == null ? 400 : e.getCode()).body(e.getMessage());
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public void update(@PathVariable Integer id, @Valid @RequestBody CreditoDto.Post dto) throws HttpException {
+        creditoService.update(id, dto);
+
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Integer id) {
-        try {
-            creditoService.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (HttpException e) {
-            return ResponseEntity.status(e.getCode() == null ? 400 : e.getCode()).body(e.getMessage());
-        }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Integer id) throws HttpException {
+        creditoService.delete(id);
     }
 
     @PostMapping("/{id}/pago")
-    public ResponseEntity<?> registrarPago(@PathVariable Integer id, @RequestBody java.util.Map<String, Object> body) {
-        try {
-            Object m = body.get("monto");
-            if (m == null) return ResponseEntity.badRequest().body("Falta el campo 'monto'");
-            Float monto = Float.valueOf(String.valueOf(m));
-            var pago = pagoCreditoService.registrarPago(id, monto);
-            return ResponseEntity.ok(java.util.Map.of("id", pago.getId(), "monto", pago.getMonto(), "fecha", pago.getFecha().toString()));
-        } catch (HttpException e) {
-            return ResponseEntity.status(e.getCode() == null ? 400 : e.getCode()).body(e.getMessage());
-        } catch (Exception ex) {
-            return ResponseEntity.status(500).body(ex.getMessage());
-        }
+    @ResponseStatus(HttpStatus.CREATED)
+    public void registrarPago(@PathVariable Integer id, @Valid @RequestBody PagoCreditoDto.Post dto)
+            throws HttpException {
+        pagoCreditoService.registrarPago(id, dto.getMonto());
+    }
+
+    @GetMapping("/{id}/pagos")
+    public List<PagoCreditoDto.Get> obtenerPagos(@PathVariable Integer id) throws HttpException {
+        List<PagoCredito> pagos = pagoCreditoService.obtenerPagosPorCredito(id);
+        return pagos.stream()
+                .map(PagoCreditoDto.Get::new)
+                .collect(Collectors.toList());
     }
 
 }

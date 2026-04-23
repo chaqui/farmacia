@@ -18,7 +18,7 @@ public class LoteDto {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class POST extends UbicacionDto {
+    public static class POST  {
         protected LocalDate fechaVencimiento;
         protected Float precio;
         protected Float precioVenta;
@@ -46,16 +46,13 @@ public class LoteDto {
             this.precioVenta = lote.getPrecioVenta();
             this.precioDescuento = lote.getPrecioDescuento();
             this.ganancia = lote.getGanancia();
-            if (lote.getProducto() != null) {
-                this.estanteria = lote.getProducto().getEstanteria();
-                this.nivel = lote.getProducto().getNivel();
-            }
+   
         }
 
     }
 
     @Getter
-    public static class GETLoteProducto extends UbicacionDto {
+    public static class GETLoteProducto  {
 
         private String cliente;
         private Long id;
@@ -70,10 +67,7 @@ public class LoteDto {
             this.lote = lote.getLote();
             this.cantidad = lote.getCantidad();
             this.fechaVencimiento = lote.getFechaVencimiento();
-            if (lote.getProducto() != null) {
-                this.estanteria = lote.getProducto().getEstanteria();
-                this.nivel = lote.getProducto().getNivel();
-            }
+ 
 
         }
 
@@ -88,13 +82,5 @@ public class LoteDto {
         private Long cantidad;
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    public static class UbicacionDto {
-
-        protected String estanteria;
-        protected Integer nivel;
-    }
 
 }

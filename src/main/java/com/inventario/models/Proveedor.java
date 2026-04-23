@@ -1,5 +1,6 @@
 package com.inventario.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.inventario.dto.ProveedorDto;
@@ -10,6 +11,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,8 +42,16 @@ public class Proveedor {
     @Column
     private String contacto;
 
-     @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Producto> productos;
+
+    @ManyToMany
+    @JoinTable(
+        name = "proveedor_marca",
+        joinColumns = @JoinColumn(name = "proveedor_id"),
+        inverseJoinColumns = @JoinColumn(name = "marca_id")
+    )
+    private List<Marca> marcas = new ArrayList<>();
 
     public Proveedor(ProveedorDto.POST proveedor){
         this.nombre = proveedor.nombre;

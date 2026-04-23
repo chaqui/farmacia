@@ -7,15 +7,17 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.inventario.dto.LoteDto;
 import com.inventario.dto.ProductoDto;
 import com.inventario.exception.HttpException;
 import com.inventario.models.Fotografia;
 import com.inventario.models.Lote;
 import com.inventario.models.Producto;
 import com.inventario.models.Proveedor;
+import com.inventario.models.Marca;
 import com.inventario.repository.ProductoRepository;
+import com.inventario.repository.MarcaRepository;
 import com.inventario.models.Categoria;
-
 
 import jakarta.transaction.Transactional;
 
@@ -24,20 +26,30 @@ public class ProductoService {
 
     private ProductoRepository productoRepository;
     private CategoriaService categoriaService;
+    private MarcaRepository marcaRepository;
 
-    public ProductoService(ProductoRepository productoRepository, CategoriaService categoriaService) {
+    public ProductoService(ProductoRepository productoRepository, CategoriaService categoriaService, MarcaRepository marcaRepository) {
         this.productoRepository = productoRepository;
         this.categoriaService = categoriaService;
+        this.marcaRepository = marcaRepository;
     }
 
     @Transactional
-    public void crearProducto(ProductoDto.Post productoDto, Proveedor proveedor) throws HttpException  {
+    public void crearProducto(ProductoDto.Post productoDto, Proveedor proveedor) throws HttpException {
         // validar porcentajes si se enviaron
         Float pd = productoDto.getPorcentajeDescuento();
         Float pg = productoDto.getPorcentajeGanancia();
-        
+
         this.validarPorcentajes(pd, pg);
         Producto producto = new Producto(productoDto, proveedor);
+        
+        // Establecer marca si se proporciona
+        if (productoDto.getMarcaId() != null) {
+            Marca marca = marcaRepository.findById(productoDto.getMarcaId())
+                    .orElseThrow(() -> new HttpException("Marca no encontrada"));
+            producto.setMarca(marca);
+        }
+        
         productoRepository.save(producto);
 
         if (productoDto.getFotografias() != null) {
@@ -60,16 +72,19 @@ public class ProductoService {
         if (productoDto.getCategoriaIds() != null) {
             productoDto.getCategoriaIds().forEach(id -> {
                 Categoria categoria = categoriaService.obtenerCategoria(id);
-                if (categoria != null) categorias.add(categoria);
+                if (categoria != null)
+                    categorias.add(categoria);
             });
         }
 
         // nombres: crear si no existen
         if (productoDto.getCategoriaNombres() != null) {
             productoDto.getCategoriaNombres().forEach(nombre -> {
-                if (nombre == null || nombre.isBlank()) return;
+                if (nombre == null || nombre.isBlank())
+                    return;
                 Categoria categoria = categoriaService.crearSiNoExiste(nombre);
-                if (categoria != null) categorias.add(categoria);
+                if (categoria != null)
+                    categorias.add(categoria);
             });
         }
 
@@ -81,9 +96,12 @@ public class ProductoService {
     }
 
     private void validarPorcentajes(Float pd, Float pg) throws HttpException {
-        if (pd != null && (pd < 0f || pd > 100f)) throw new HttpException("porcentajeDescuento debe estar entre 0 y 100", 400);
-        if (pg != null && (pg < 0f || pg > 100f)) throw new HttpException("porcentajeGanancia debe estar entre 0 y 100", 400);
-        if (pd != null && pg != null && pd > pg) throw new HttpException("El porcentaje de descuento no puede ser mayor al de ganancia", 400);
+        if (pd != null && (pd < 0f || pd > 100f))
+            throw new HttpException("porcentajeDescuento debe estar entre 0 y 100", 400);
+        if (pg != null && (pg < 0f || pg > 100f))
+            throw new HttpException("porcentajeGanancia debe estar entre 0 y 100", 400);
+        if (pd != null && pg != null && pd > pg)
+            throw new HttpException("El porcentaje de descuento no puede ser mayor al de ganancia", 400);
     }
 
     public List<ProductoDto.Get> obtenerProductos() {
@@ -110,8 +128,10 @@ public class ProductoService {
     }
 
     public List<ProductoDto.Get> buscarProductos(String query) {
-        return productoRepository.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCaseOrCodigoContainingIgnoreCase(query, query, query)
-            .stream().map(ProductoDto.Get::new).toList();
+        return productoRepository
+                .findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCaseOrCodigoContainingIgnoreCase(query,
+                        query, query)
+                .stream().map(ProductoDto.Get::new).toList();
     }
 
     public List<ProductoDto.Get> buscarProductosRelacionados(Long id) throws HttpException {
@@ -132,9 +152,35 @@ public class ProductoService {
             }
         }
 
+        // agregar todos los de la misma marca
+        if (producto.getMarca() != null) {
+            List<Producto> productosMarca = productoRepository.findByMarcaId(producto.getMarca().getId());
+            if (productosMarca != null) {
+                resultado.addAll(productosMarca);
+            }
+        }
+
         // quitar el propio producto si está presente
         resultado.removeIf(p -> p.getId().equals(producto.getId()));
 
         return resultado.stream().map(ProductoDto.Get::new).toList();
     }
+
+    public List<ProductoDto.Get> obtenerProductosPorMarca(Integer marcaId) throws HttpException {
+        if (!marcaRepository.existsById(marcaId)) {
+            throw new HttpException("Marca no encontrada");
+        }
+        return productoRepository.findByMarcaId(marcaId).stream()
+                .map(ProductoDto.Get::new).toList();
+    }
+
+    @Transactional
+    public void actualizarUbicacion(Long productoId, ProductoDto.UbicacionDto ubicacion) throws HttpException {
+        Producto producto = this.obtenerProducto(productoId);
+        producto.setBodega(ubicacion.getBodega());
+        producto.setEstanteria(ubicacion.getEstanteria());
+        producto.setNivel(ubicacion.getNivel());
+        productoRepository.save(producto);
+    }
+
 }

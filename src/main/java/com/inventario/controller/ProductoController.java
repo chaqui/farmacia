@@ -1,8 +1,11 @@
 package com.inventario.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @RestController
 @RequestMapping("/productos")
@@ -68,5 +72,18 @@ public class ProductoController {
     public List<ProductoDto.Get> obtenerRelacionados(@PathVariable Long id) throws HttpException {
         return this.productoService.buscarProductosRelacionados(id);
     }
+
+    @GetMapping("/marca/{marcaId}")
+    public List<ProductoDto.Get> obtenerProductosPorMarca(@PathVariable Integer marcaId) throws HttpException {
+        return this.productoService.obtenerProductosPorMarca(marcaId);
+    }
+
+    @PutMapping("/{id}/ubicacion")
+    @ResponseStatus(HttpStatus.OK)
+    public void actualizarUbicacion(@PathVariable Long id, @RequestBody ProductoDto.UbicacionDto ubicacion)
+            throws HttpException {
+        this.productoService.actualizarUbicacion(id, ubicacion);
+    }
+
 
 }

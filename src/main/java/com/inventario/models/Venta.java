@@ -42,6 +42,9 @@ public class Venta {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Integer id;
 
+        @Column(nullable = false, unique = true)
+        private String codigoVenta;
+
         @Column(nullable = false)
         private LocalDate fecha;
 
@@ -68,6 +71,9 @@ public class Venta {
         @OneToMany(mappedBy = "venta")
         List<Credito> creditos = new ArrayList<>();
 
+        @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
+        List<DevolucionVenta> devoluciones = new ArrayList<>();
+
         @ManyToOne 
         @JoinColumn(name = "cliente_id", nullable = true)
         Cliente cliente;
@@ -87,10 +93,20 @@ public class Venta {
         }
 
         public Venta(VentaDto.Post ventaDto, Cliente cliente) {
+                this.codigoVenta = generarCodigoVenta();
                 this.fecha = ventaDto.getFecha();
                 this.cliente = cliente;
                 this.nombreCliente = cliente != null ? cliente.getNombre() : ventaDto.getNombreCliente();
                 this.estado = EstadoVenta.CREADA;
+        }
+
+        private static String generarCodigoVenta() {
+                // Generar código: VTA-YYYYMMDD-XXXXX (5 dígitos aleatorios)
+                java.time.LocalDate hoy = java.time.LocalDate.now();
+                String fecha = hoy.getYear() + String.format("%02d", hoy.getMonthValue()) 
+                        + String.format("%02d", hoy.getDayOfMonth());
+                String random = String.format("%05d", (int)(Math.random() * 100000));
+                return "VTA-" + fecha + "-" + random;
         }
 
         public void addDetalle(DetalleVenta detalle) {
