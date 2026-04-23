@@ -31,9 +31,21 @@ public class ProveedorService {
     /**
      * Crea un proveedor
      * @param proveedorDto datos del proveedor
+     * @throws HttpException si alguna marca no existe
      */
-    public void crearProveedor(ProveedorDto.POST proveedorDto) {
-        proveedorRepository.save(new Proveedor(proveedorDto));
+    public void crearProveedor(ProveedorDto.POST proveedorDto) throws HttpException {
+        Proveedor proveedor = new Proveedor(proveedorDto);
+        
+        // Asignar marcas si se proporcionan
+        if (proveedorDto.getMarcaIds() != null && !proveedorDto.getMarcaIds().isEmpty()) {
+            for (Integer marcaId : proveedorDto.getMarcaIds()) {
+                Marca marca = marcaRepository.findById(marcaId)
+                        .orElseThrow(() -> new HttpException("Marca con ID " + marcaId + " no encontrada"));
+                proveedor.getMarcas().add(marca);
+            }
+        }
+        
+        proveedorRepository.save(proveedor);
     }
 
     /**

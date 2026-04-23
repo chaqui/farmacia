@@ -2,6 +2,7 @@ package com.inventario.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,8 +31,10 @@ public class ProveedorController {
     private ProveedorService proveedorService;
 
     @PostMapping
-    public void crearProveedor(@Valid @RequestBody ProveedorDto.POST proveedorDto) {
+    public ResponseEntity<Void> crearProveedor(@Valid @RequestBody ProveedorDto.POST proveedorDto) 
+            throws HttpException {
         proveedorService.crearProveedor(proveedorDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping

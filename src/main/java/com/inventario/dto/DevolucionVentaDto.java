@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.inventario.dto.DetalleDevolucionDto;
 
 public class DevolucionVentaDto {
 
@@ -32,21 +33,7 @@ public class DevolucionVentaDto {
         private String motivo;
 
         @NotNull(message = "Los detalles son obligatorios")
-        private List<DetallePost> detalles;
-
-        @AllArgsConstructor
-        @Getter
-        @NoArgsConstructor
-        @Setter
-        public static class DetallePost {
-            @NotNull(message = "El ID del detalle de venta es obligatorio")
-            private Integer detalleVentaId;
-
-            @NotNull(message = "La cantidad es obligatoria")
-            private Long cantidad;
-
-            private String razonDevolucion;
-        }
+        private List<DetalleDevolucionDto.Post> detalles;
     }
 
     @Getter
@@ -62,7 +49,7 @@ public class DevolucionVentaDto {
         private String motivo;
         private Float total;
         private Boolean procesada;
-        private List<DetalleGet> detalles;
+        private List<DetalleDevolucionDto.Get> detalles;
 
         public Get(DevolucionVenta devolucion) {
             this.id = devolucion.getId();
@@ -76,18 +63,5 @@ public class DevolucionVentaDto {
             this.total = devolucion.getTotal();
             this.procesada = devolucion.getProcesada();
         }
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Setter
-    public static class DetalleGet {
-        private Integer id;
-        private String nombreProducto;
-        private Long cantidad;
-        private Float precioUnitario;
-        private Float subtotal;
-        private String razonDevolucion;
     }
 }

@@ -1,5 +1,6 @@
 package com.inventario.dto;
 
+import java.util.List;
 import com.inventario.models.Proveedor;
 
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ public class ProveedorDto {
         public String telefono;
         public String email;
         public String contacto;
-
+        public List<Integer> marcaIds;
     }
 
     @Getter
@@ -42,6 +43,9 @@ public class ProveedorDto {
             this.telefono = proveedor.getTelefono();
             this.email = proveedor.getEmail();
             this.contacto = proveedor.getContacto();
+            this.marcaIds = proveedor.getMarcas().stream()
+                    .map(marca -> marca.getId())
+                    .toList();
         }
 
     }
