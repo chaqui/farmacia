@@ -37,6 +37,8 @@ public class DevolucionVentaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public DevolucionVentaDto.Get crearDevolucion(@Valid @RequestBody DevolucionVentaDto.Post devolucionDto)
             throws HttpException {
         DevolucionVenta devolucion = devolucionVentaService.crearDevolucion(devolucionDto);
@@ -45,12 +47,16 @@ public class DevolucionVentaController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public List<DevolucionVentaDto.Get> obtenerDevoluciones() {
         return devolucionVentaService.obtenerDevoluciones();
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public DevolucionVentaDto.Get obtenerDevolucionPorId(@PathVariable Integer id) throws HttpException {
         DevolucionVenta devolucion = devolucionVentaService.obtenerDevolucionPorId(id);
         return new DevolucionVentaDto.Get(devolucion);
@@ -58,6 +64,8 @@ public class DevolucionVentaController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public void cancelarDevolucion(@PathVariable Integer id) throws HttpException {
         devolucionVentaService.cancelarDevolucion(id);
     }

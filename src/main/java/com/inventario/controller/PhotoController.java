@@ -32,6 +32,8 @@ public class PhotoController {
     }
 
     @PostMapping(value = "/upload", consumes = {"multipart/form-data"})
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
         try {
             String storedPath = photoService.store(file);
@@ -43,6 +45,8 @@ public class PhotoController {
     }
 
     @GetMapping("/download")
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Resource> download(@RequestParam(name = "path", required = false) String path) {
         System.out.println("@@@ ENDPOINT DOWNLOAD LLAMADO - path: " + path);
         log.warn("@@@ ENDPOINT DOWNLOAD LLAMADO - path: " + path);

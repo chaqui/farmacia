@@ -52,12 +52,16 @@ public class VentaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.VENDEDOR})
     public void crearVenta(@Valid @RequestBody VentaDto.Post ventaDto) throws HttpException {
         this.ventaService.crearVenta(ventaDto);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public List<VentaDto.GetSinSucursal> obtenerVentas() {
         return this.ventaService.obtenerVentas();
     }
@@ -89,6 +93,8 @@ public class VentaController {
      */
     @PostMapping("/{ventaId}/verificar")
     @ResponseStatus(HttpStatus.OK)
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA})
     public VentaDto.GetSinSucursal verificarVenta(
             @PathVariable Integer ventaId,
             @RequestBody VentaDto.Verificar dtoVerificar) throws HttpException {
@@ -113,6 +119,8 @@ public class VentaController {
      */
     @PostMapping("/{ventaId}/autorizar")
     @ResponseStatus(HttpStatus.OK)
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public VentaDto.GetSinSucursal autorizarVenta(
             @PathVariable Integer ventaId) throws HttpException {
 
@@ -136,6 +144,8 @@ public class VentaController {
      */
     @DeleteMapping("/{ventaId}/cancelar")
     @ResponseStatus(HttpStatus.OK)
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.ADMINISTRADOR})
     public VentaDto.GetSinSucursal cancelarVenta(
             @PathVariable Integer ventaId) throws HttpException {
 
@@ -148,6 +158,8 @@ public class VentaController {
      */
     @GetMapping("/{ventaId}")
     @ResponseStatus(HttpStatus.OK)
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public EstadoVenta obtenerEstado(
             @PathVariable Integer ventaId) throws HttpException {
 
@@ -194,6 +206,8 @@ public class VentaController {
 
     @GetMapping("/{id}/detalles")
     @ResponseStatus(HttpStatus.OK)
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public List<VentaDetalleDto.Get> obtenerDetallesVenta(@PathVariable Integer id) throws HttpException {
         return this.ventaService.obtenerDetallesVenta(id);
     }
@@ -244,6 +258,8 @@ public class VentaController {
      */
     @PostMapping("/{ventaId}/devolucion")
     @ResponseStatus(HttpStatus.CREATED)
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public DevolucionVentaDto.Get crearDevolucion(
             @PathVariable Integer ventaId,
             @Valid @RequestBody DevolucionVentaDto.Post devolucionDto) throws HttpException {

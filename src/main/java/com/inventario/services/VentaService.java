@@ -3,6 +3,9 @@ package com.inventario.services;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 
 import com.inventario.dto.VentaDetalleDto;
 import com.inventario.dto.VentaDto;
@@ -32,6 +35,12 @@ public class VentaService {
 
     private final NotificacionService notificacionService;
 
+    @Autowired
+    private Environment env;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
     public VentaService(VentaRepository ventaRepository,
             SucursalLoteService sucursalLoteService, LoteService loteService, ClienteService clienteService,
             NotificacionService notificacionService) {
@@ -43,7 +52,7 @@ public class VentaService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public void crearVenta(VentaDto.Post ventaDto) throws HttpException {
+    public Venta crearVenta(VentaDto.Post ventaDto) throws HttpException {
         Cliente cliente = null;
         if(ventaDto.getClienteId() != null) {
              cliente = this.clienteService.obtenerClientePorId(ventaDto.getClienteId());
@@ -54,13 +63,28 @@ public class VentaService {
         this.ventaRepository.save(venta);
         this.agregarSubdetallesSinSucursal(venta, ventaDto.getDetalles());
 
-        // Notificar creación de venta
-        notificacionService.notificarVerificacionVenta(
+       
+
+        // Si la variable de entorno indica venta directa, enviar a verificación (y autorizar si aplica)
+        boolean ventaDirecta = Boolean.parseBoolean(env.getProperty("VENTA_DIRECTA", env.getProperty("venta.directa.enabled", "false")));
+        if (ventaDirecta) {
+            VentaDto.Verificar dto = new VentaDto.Verificar();
+            dto.setEsCredito(false);
+            // Obtener el servicio de estado y ejecutar la verificación (esto autoriza automáticamente si no es crédito)
+            VentaStateService ventaStateService = this.applicationContext.getBean(VentaStateService.class);
+            ventaStateService.verificarVenta(venta.getId(), dto);
+        }
+        else {
+            // Notificar creación de venta
+            notificacionService.notificarVerificacionVenta(
                 venta.getId(),
                 cliente != null ? cliente.getId() : null,
                 venta.getTotal().doubleValue(),
                 cliente != null ? cliente.getNombre() : ventaDto.getNombreCliente()
-        );
+            );
+        }
+
+        return venta;
     }
 
     private void agregarSubdetallesSinSucursal(Venta venta, List<VentaDetalleDto.Post> detalles) throws HttpException {
@@ -78,19 +102,33 @@ public class VentaService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public void crearVenta(VentaDto.Post ventaDto, Sucursal sucursal) throws HttpException {
+    public Venta crearVenta(VentaDto.Post ventaDto, Sucursal sucursal) throws HttpException {
         Cliente cliente = this.clienteService.obtenerClientePorId(ventaDto.getClienteId());
         Venta venta = new Venta(ventaDto, sucursal, cliente);
         this.ventaRepository.save(venta);
         this.agregarSubdetallesConSucursal(venta, ventaDto.getDetalles());
 
-        // Notificar creación de venta
-        notificacionService.notificarVerificacionVenta(
+  
+
+        // Si la variable de entorno indica venta directa, enviar a verificación (y autorizar si aplica)
+        boolean ventaDirecta = Boolean.parseBoolean(env.getProperty("VENTA_DIRECTA", env.getProperty("venta.directa.enabled", "false")));
+        if (ventaDirecta) {
+            VentaDto.Verificar dto = new VentaDto.Verificar();
+            dto.setEsCredito(false);
+            VentaStateService ventaStateService = this.applicationContext.getBean(VentaStateService.class);
+            ventaStateService.verificarVenta(venta.getId(), dto);
+        }
+        else {
+            // Notificar creación de venta
+            notificacionService.notificarVerificacionVenta(
                 venta.getId(),
-                cliente.getId(),
+                cliente != null ? cliente.getId() : null,
                 venta.getTotal().doubleValue(),
-                cliente.getNombre()
-        );
+                cliente != null ? cliente.getNombre() : ventaDto.getNombreCliente()
+            );
+        }
+
+        return venta;
     }
 
     private void agregarSubdetallesConSucursal(Venta venta, List<VentaDetalleDto.Post> detalles) throws HttpException {

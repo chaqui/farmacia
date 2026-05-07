@@ -1,0 +1,88 @@
+Ruta,Método HTTP,Descripción,Rol Recomendado
+/ventas,POST,Crear una venta,vendedor
+/ventas,GET,Obtener todas las ventas,vendedor|caja|administrador
+/ventas/{ventaId}/verificar,POST,Verificar venta (cambiar a estado VERIFICADA),vendedor|caja
+/ventas/{ventaId}/autorizar,POST,Autorizar venta (cambiar a estado AUTORIZADA),caja|administrador
+/ventas/{ventaId}/cancelar,DELETE,Cancelar una venta y liberar productos,vendedor|administrador
+/ventas/{ventaId},GET,Obtener estado actual de una venta,vendedor|caja|administrador
+/compras,POST,Crear una compra,compras|administrador
+/compras,GET,Obtener todas las compras,compras|administrador
+/compras/{id}/detalles,GET,Obtener detalles de una compra,compras|administrador
+/autorizaciones-limite-credito/pendientes,GET,Obtener solicitudes de autorización pendientes,administrador
+/autorizaciones-limite-credito/{id},GET,Obtener autorización por ID,administrador
+/autorizaciones-limite-credito/{id}/aprobar,POST,Aprobar solicitud de autorización de crédito,administrador
+/autorizaciones-limite-credito/{id}/rechazar,POST,Rechazar solicitud de autorización de crédito,administrador
+/clientes,GET,Obtener todos los clientes,vendedor|caja|compras|administrador
+/clientes,POST,Crear un nuevo cliente,vendedor|administrador
+/clientes/search,GET,Buscar clientes por nombre,vendedor|caja|administrador
+/clientes/{id},GET,Obtener cliente por ID,vendedor|caja|administrador
+/clientes/{id},PUT,Actualizar información del cliente,vendedor|administrador
+/clientes/{id}/limite,PUT,Cambiar límite de crédito del cliente,administrador
+/clientes/{id},DELETE,Eliminar un cliente,administrador
+/clientes/{id}/creditos,GET,Obtener créditos de un cliente,vendedor|caja|administrador
+/clientes/{id}/autorizaciones,GET,Obtener autorizaciones de un cliente,administrador
+/productos,GET,Obtener todos los productos,vendedor|caja|compras|administrador
+/productos/buscar,GET,Buscar productos por nombre,vendedor|caja|compras|administrador
+/productos/search,GET,Buscar productos (variante search),vendedor|caja|compras|administrador
+/productos/{id},GET,Obtener producto por ID,vendedor|caja|compras|administrador
+/productos/{id}/lotes,GET,Obtener lotes de un producto,compras|administrador
+/productos/{id}/relacionados,GET,Obtener productos relacionados,vendedor|caja|administrador
+/productos/marca/{marcaId},GET,Obtener productos por marca,vendedor|caja|compras|administrador
+/productos/{id}/ubicacion,PUT,Actualizar ubicación del producto,compras|administrador
+/creditos,GET,Obtener todos los créditos,caja|administrador
+/creditos/{id},GET,Obtener crédito por ID,caja|administrador
+/creditos,POST,Crear un crédito,administrador
+/creditos/{id},PUT,Actualizar un crédito,administrador
+/creditos/{id},DELETE,Eliminar un crédito,administrador
+/creditos/{id}/pago,POST,Registrar pago de crédito,caja|administrador
+/creditos/{id}/pagos,GET,Obtener pagos de un crédito,caja|administrador
+/categorias,GET,Obtener todas las categorías,vendedor|caja|compras|administrador
+/categorias/{id},GET,Obtener categoría por ID,vendedor|caja|compras|administrador
+/categorias,POST,Crear una categoría,administrador
+/categorias/{id},DELETE,Eliminar una categoría,administrador
+/categorias/{id}/productos,GET,Obtener productos de una categoría,vendedor|caja|compras|administrador
+/marcas,GET,Obtener todas las marcas,vendedor|caja|compras|administrador
+/marcas/{id},GET,Obtener marca por ID,vendedor|caja|compras|administrador
+/marcas,POST,Crear una marca,administrador
+/marcas/{id},PUT,Actualizar una marca,administrador
+/marcas/{id},DELETE,Eliminar una marca,administrador
+/marcas/{marcaId}/productos,GET,Obtener productos de una marca,vendedor|caja|compras|administrador
+/marcas/{marcaId}/proveedores,GET,Obtener proveedores de una marca,compras|administrador
+/marcas/{marcaId}/proveedores/{proveedorId},POST,Asignar proveedor a marca,administrador
+/marcas/{marcaId}/proveedores/{proveedorId},DELETE,Remover proveedor de marca,administrador
+/proveedores,POST,Crear un proveedor,compras|administrador
+/proveedores,GET,Obtener todos los proveedores,compras|administrador
+/proveedores/{id},GET,Obtener proveedor por ID,compras|administrador
+/proveedores/{id}/productos,POST,Agregar producto a proveedor,compras|administrador
+/proveedores/{id}/productos,GET,Obtener productos de un proveedor,compras|administrador
+/proveedores/{id}/marcas,GET,Obtener marcas de un proveedor,compras|administrador
+/proveedores/{proveedorId}/marcas/{marcaId},POST,Asignar marca a proveedor,administrador
+/proveedores/{proveedorId}/marcas/{marcaId},DELETE,Remover marca de proveedor,administrador
+/proveedores/{id},DELETE,Eliminar un proveedor,administrador
+/devoluciones,POST,Crear una devolución de venta,vendedor|caja|administrador
+/devoluciones,GET,Obtener todas las devoluciones,vendedor|caja|administrador
+/devoluciones/{id},GET,Obtener devolución por ID,vendedor|caja|administrador
+/devoluciones/{id},DELETE,Cancelar una devolución,administrador
+/api/notificaciones/stream,GET,Conectarse a SSE para recibir notificaciones,vendedor|caja|compras|administrador
+/api/notificaciones/stream/credito,GET,Conectarse a SSE para notificaciones de crédito,caja|administrador
+/api/notificaciones/stream/venta,GET,Conectarse a SSE para notificaciones de venta,vendedor|administrador
+/api/notificaciones/estado,GET,Obtener estado de conexiones SSE,administrador
+/api/notificaciones/prueba,POST,Enviar notificación de prueba,administrador
+/api/notificaciones/credito/solicitud,POST,Notificar solicitud de autorización de crédito,administrador
+/api/notificaciones/credito/aprobada,POST,Notificar aprobación de crédito,administrador
+/api/notificaciones/credito/rechazada,POST,Notificar rechazo de crédito,administrador
+/solicitudes,POST,Crear una solicitud de compra,compras|administrador
+/solicitudes/{id}/enviar,POST,Enviar solicitud de compra,compras|administrador
+/solicitudes/{id},GET,Obtener solicitud por ID,compras|administrador
+/solicitudes,GET,Obtener todas las solicitudes,compras|administrador
+/solicitudes/{id}/detalles,GET,Obtener detalles de una solicitud,compras|administrador
+/sucursales,POST,Crear una sucursal,administrador
+/sucursales/{id},GET,Obtener sucursal por ID,vendedor|caja|compras|administrador
+/sucursales/{id},PUT,Actualizar una sucursal,administrador
+/sucursales,GET,Obtener todas las sucursales,vendedor|caja|compras|administrador
+/sucursales/{id}/solicitudes,GET,Obtener solicitudes de una sucursal,compras|administrador
+/sucursales/{id}/ventas,GET,Obtener ventas de una sucursal,caja|administrador
+/sucursales/{id}/ventas,POST,Crear venta en una sucursal,vendedor
+/sucursales/{id},DELETE,Eliminar una sucursal,administrador
+/photos/upload,POST,Subir una foto,vendedor|compras|administrador
+/photos/download,GET,Descargar una foto,vendedor|caja|compras|administrador

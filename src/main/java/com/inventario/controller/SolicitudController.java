@@ -29,27 +29,37 @@ public class SolicitudController {
         this.solicitudDetalleService = solicitudDetalleService;
     }
     @PostMapping
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public void crearSolicitud(@Valid @RequestBody SolicitudDto.POST solicitudDto) throws HttpException {
         this.solicitudService.crearSolicitud(solicitudDto);
     }
 
     @PostMapping("/{id}/enviar")
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public void enviarSolicitud(@PathVariable Long id, @Valid @RequestBody SolicitudDto.ENVIAR solicitudDto)
             throws HttpException {
         this.solicitudService.enviarSolicitud(id, solicitudDto.getLotes());
     }
 
     @GetMapping("/{id}")
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public SolicitudDto.GET obtenerSolicitud(@PathVariable Long id) throws HttpException {
         return new SolicitudDto.GET(this.solicitudService.obtenerSolicitud(id));
     }
 
     @GetMapping
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public Iterable<SolicitudDto.GET> obtenerSolicitudes() {
         return this.solicitudService.obtenerSolicitudes().stream().map(SolicitudDto.GET::new).toList();
     }
 
     @GetMapping("/{id}/detalles")
+    // Ejemplo de autorización:
+    // @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public Iterable<SolicitudDetalleDto.Get> obtenerDetalles(@PathVariable Long id) {
         return this.solicitudDetalleService.obtenerDetalles(id).stream().map(SolicitudDetalleDto.Get::new).toList();
     }
