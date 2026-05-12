@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import com.inventario.security.ValidateToken;
+import com.inventario.security.SystemRoles;
 
 @RestController
 @RequestMapping("/productos")
@@ -31,15 +33,13 @@ public class ProductoController {
     private ProductoService productoService;
 
     @GetMapping
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public List<ProductoDto.Get> obtenerProductos() {
         return productoService.obtenerProductos();
     }
 
     @GetMapping("/buscar")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public List<ProductoDto.Get> getProductoPorNombre(@RequestParam(name = "q", required = false) String query,
             @RequestParam(name = "nombre", required = false) String nombre) {
         String q = query != null ? query : nombre;
@@ -52,8 +52,7 @@ public class ProductoController {
     }
 
     @GetMapping("/search")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public List<ProductoDto.Get> buscarProductos(@RequestParam(name = "q", required = false) String q) {
         log.info("Busqueda general productos q: " + q);
         if (q == null || q.isBlank()) {
@@ -63,15 +62,13 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public ProductoDto.Get obtenerProducto(@PathVariable Long id) throws HttpException {
         return new ProductoDto.Get(productoService.obtenerProducto(id));
     }
 
     @GetMapping("/{id}/lotes")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public List<LoteDto.GET> obtenerLotes(@PathVariable Long id) throws HttpException {
         log.info("Obteniendo lotes del producto con id: " + id);
         return this.productoService.obtenerLotes(id).stream().map(lote -> new LoteDto.GET(lote))
@@ -79,23 +76,20 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}/relacionados")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public List<ProductoDto.Get> obtenerRelacionados(@PathVariable Long id) throws HttpException {
         return this.productoService.buscarProductosRelacionados(id);
     }
 
     @GetMapping("/marca/{marcaId}")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public List<ProductoDto.Get> obtenerProductosPorMarca(@PathVariable Integer marcaId) throws HttpException {
         return this.productoService.obtenerProductosPorMarca(marcaId);
     }
 
     @PutMapping("/{id}/ubicacion")
     @ResponseStatus(HttpStatus.OK)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public void actualizarUbicacion(@PathVariable Long id, @RequestBody ProductoDto.UbicacionDto ubicacion)
             throws HttpException {
         this.productoService.actualizarUbicacion(id, ubicacion);

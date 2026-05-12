@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import com.inventario.security.ValidateToken;
+import com.inventario.security.SystemRoles;
 
 @RestController
 @RequestMapping("creditos")
@@ -36,24 +38,21 @@ public class CreditoController {
     }
 
     @GetMapping
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public List<CreditoDto.Get> list() {
         return creditoService.listAll().stream().map(CreditoDto.Get::new).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public CreditoDto.Get get(@PathVariable Integer id) {
         return creditoService.getById(id).map(CreditoDto.Get::new).orElse(null);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public void create(@Valid @RequestBody CreditoDto.Post dto) throws HttpException {
 
         creditoService.create(dto);
@@ -62,8 +61,7 @@ public class CreditoController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public void update(@PathVariable Integer id, @Valid @RequestBody CreditoDto.Post dto) throws HttpException {
         creditoService.update(id, dto);
 
@@ -71,24 +69,21 @@ public class CreditoController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public void delete(@PathVariable Integer id) throws HttpException {
         creditoService.delete(id);
     }
 
     @PostMapping("/{id}/pago")
     @ResponseStatus(HttpStatus.CREATED)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public void registrarPago(@PathVariable Integer id, @Valid @RequestBody PagoCreditoDto.Post dto)
             throws HttpException {
         pagoCreditoService.registrarPago(id, dto.getMonto());
     }
 
     @GetMapping("/{id}/pagos")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public List<PagoCreditoDto.Get> obtenerPagos(@PathVariable Integer id) throws HttpException {
         List<PagoCredito> pagos = pagoCreditoService.obtenerPagosPorCredito(id);
         return pagos.stream()

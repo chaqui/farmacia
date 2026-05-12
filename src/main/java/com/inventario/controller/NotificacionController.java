@@ -11,6 +11,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.HashMap;
 import java.util.Map;
+import com.inventario.security.ValidateToken;
+import com.inventario.security.SystemRoles;
 
 /**
  * Controlador REST para gestionar notificaciones SSE
@@ -36,8 +38,7 @@ public class NotificacionController {
      * Conecta un cliente a SSE para recibir todas las notificaciones
      */
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public SseEmitter streamNotificaciones() {
         return sseService.subscribe();
     }
@@ -46,8 +47,7 @@ public class NotificacionController {
      * Conecta un cliente a SSE para recibir solo notificaciones de crédito
      */
     @GetMapping(value = "/stream/credito", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public SseEmitter streamCreditoNotificaciones() {
         return sseService.subscribeCredito();
     }
@@ -56,8 +56,7 @@ public class NotificacionController {
      * Conecta un cliente a SSE para recibir solo notificaciones de venta
      */
     @GetMapping(value = "/stream/venta", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.ADMINISTRADOR})
     public SseEmitter streamVentaNotificaciones() {
         return sseService.subscribeVenta();
     }
@@ -68,8 +67,7 @@ public class NotificacionController {
      * Obtiene el estado de las conexiones SSE
      */
     @GetMapping("/estado")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Map<String, Object>> obtenerEstado() {
         Map<String, Object> estado = new HashMap<>();
         estado.put("sse", new HashMap<String, Integer>() {
@@ -89,8 +87,7 @@ public class NotificacionController {
      * Envía una notificación de prueba mediante SSE
      */
     @PostMapping("/prueba")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Map<String, String>> enviarNotificacionPrueba() {
         NotificacionDto notificacion = NotificacionDto.builder()
                 .tipo("PRUEBA")
@@ -114,8 +111,7 @@ public class NotificacionController {
      * Envía notificación de solicitud de autorización de crédito
      */
     @PostMapping("/credito/solicitud")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Map<String, String>> notificarSolicitudCredito(
             @RequestParam Integer solicitudId,
             @RequestParam Integer clienteId,
@@ -135,8 +131,7 @@ public class NotificacionController {
      * Envía notificación de aprobación de crédito
      */
     @PostMapping("/credito/aprobada")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Map<String, String>> notificarAprobacionCredito(
             @RequestParam Integer solicitudId,
             @RequestParam Integer clienteId,
@@ -156,8 +151,7 @@ public class NotificacionController {
      * Envía notificación de rechazo de crédito
      */
     @PostMapping("/credito/rechazada")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Map<String, String>> notificarRechazoCredito(
             @RequestParam Integer solicitudId,
             @RequestParam Integer clienteId,
@@ -176,8 +170,7 @@ public class NotificacionController {
      * Envía notificación de venta en espera de verificación
      */
     @PostMapping("/venta/verificacion-pendiente")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Map<String, String>> notificarVerificacionVenta(
             @RequestParam Integer ventaId,
             @RequestParam Integer clienteId,
@@ -197,8 +190,7 @@ public class NotificacionController {
      * Envía notificación de autorización de venta
      */
     @PostMapping("/venta/autorizada")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Map<String, String>> notificarAutorizacionVenta(
             @RequestParam Integer ventaId,
             @RequestParam Integer clienteId,
@@ -218,8 +210,7 @@ public class NotificacionController {
      * Envía notificación de rechazo de venta
      */
     @PostMapping("/venta/rechazada")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Map<String, String>> notificarRechazoVenta(
             @RequestParam Integer ventaId,
             @RequestParam Integer clienteId,

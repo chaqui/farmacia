@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.inventario.security.ValidateToken;
+import com.inventario.security.SystemRoles;
 
 import com.inventario.dto.MarcaDto;
 import com.inventario.dto.ProductoDto;
@@ -33,8 +35,7 @@ public class MarcaController {
      * GET /marcas - Obtiene todas las marcas
      */
     @GetMapping
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public ResponseEntity<List<MarcaDto.Get>> obtenerTodas() {
         List<MarcaDto.Get> marcas = marcaService.obtenerTodas();
         return ResponseEntity.ok(marcas);
@@ -44,8 +45,7 @@ public class MarcaController {
      * GET /marcas/{id} - Obtiene una marca por ID
      */
     @GetMapping("/{id}")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public ResponseEntity<MarcaDto.Get> obtenerPorId(@PathVariable Integer id) throws HttpException {
         MarcaDto.Get marca = marcaService.obtenerPorId(id);
         return ResponseEntity.ok(marca);
@@ -55,8 +55,7 @@ public class MarcaController {
      * POST /marcas - Crea una nueva marca
      */
     @PostMapping
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public ResponseEntity<MarcaDto.Get> crear(@RequestBody MarcaDto.Post dto) throws HttpException {
         MarcaDto.Get marca = marcaService.crear(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(marca);
@@ -66,8 +65,7 @@ public class MarcaController {
      * PUT /marcas/{id} - Actualiza una marca
      */
     @PutMapping("/{id}")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public ResponseEntity<MarcaDto.Get> actualizar(@PathVariable Integer id,
             @RequestBody MarcaDto.Put dto) throws HttpException {
         MarcaDto.Get marca = marcaService.actualizar(id, dto);
@@ -78,8 +76,7 @@ public class MarcaController {
      * DELETE /marcas/{id} - Elimina una marca
      */
     @DeleteMapping("/{id}")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) throws HttpException {
         marcaService.eliminar(id);
         return ResponseEntity.noContent().build();
@@ -89,8 +86,7 @@ public class MarcaController {
      * GET /marcas/{marcaId}/productos - Obtiene todos los productos de una marca
      */
     @GetMapping("/{marcaId}/productos")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public ResponseEntity<List<ProductoDto.Get>> obtenerProductosPorMarca(@PathVariable Integer marcaId) 
             throws HttpException {
         List<ProductoDto.Get> productos = marcaService.obtenerProductosPorMarca(marcaId);
@@ -101,8 +97,7 @@ public class MarcaController {
      * GET /marcas/{marcaId}/proveedores - Obtiene todos los proveedores de una marca
      */
     @GetMapping("/{marcaId}/proveedores")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public ResponseEntity<List<ProveedorDto.GET>> obtenerProveedoresPorMarca(@PathVariable Integer marcaId) 
             throws HttpException {
         List<ProveedorDto.GET> proveedores = marcaService.obtenerProveedoresPorMarca(marcaId);
@@ -113,8 +108,7 @@ public class MarcaController {
      * POST /marcas/{marcaId}/proveedores/{proveedorId} - Asigna un proveedor a una marca
      */
     @PostMapping("/{marcaId}/proveedores/{proveedorId}")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Void> asignarProveedorAMarca(@PathVariable Integer marcaId,
             @PathVariable Long proveedorId) throws HttpException {
         marcaService.asignarProveedorAMarca(marcaId, proveedorId);
@@ -125,8 +119,7 @@ public class MarcaController {
      * DELETE /marcas/{marcaId}/proveedores/{proveedorId} - Remueve un proveedor de una marca
      */
     @DeleteMapping("/{marcaId}/proveedores/{proveedorId}")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Void> removerProveedorDeMarca(@PathVariable Integer marcaId,
             @PathVariable Long proveedorId) throws HttpException {
         marcaService.removerProveedorDeMarca(marcaId, proveedorId);

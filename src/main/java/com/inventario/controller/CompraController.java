@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
+import com.inventario.security.ValidateToken;
+import com.inventario.security.SystemRoles;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,16 +39,14 @@ public class CompraController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public void crearCompra(@Valid @RequestBody CompraDto.POST compraDto) throws HttpException {
         this.compraService.crearCompra(compraDto);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public List<CompraDto.GET> obtenerCompras() {
         log.info("Obteniendo compras");
         return this.compraService.obtenerCompras().stream().map(CompraDto.GET::new).toList();
@@ -54,8 +54,7 @@ public class CompraController {
 
     @GetMapping("/{id}/detalles")
     @ResponseStatus(HttpStatus.OK)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public List<DetalleDTO.GET> obtenerDetalle(@PathVariable Long id) {
         return compraService.obtenerDetalle(id).stream().map(DetalleDTO.GET::new).toList();
     }

@@ -21,6 +21,8 @@ import com.inventario.exception.HttpException;
 import com.inventario.services.SucursalService;
 
 import org.springframework.http.HttpStatus;
+import com.inventario.security.ValidateToken;
+import com.inventario.security.SystemRoles;
 
 @RestController
 @RequestMapping("/sucursales")
@@ -33,58 +35,50 @@ public class SucursalController {
     }
 
     @DeleteMapping("/{id}")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public void eliminarSucursal(@PathVariable Long id) {
         this.sucursalService.eliminarSucursal(id);
     }
 
     @PostMapping
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public void crearSucursal(@Valid @RequestBody SucursalDto.Post sucursalDto) {
         this.sucursalService.crearSucursal(sucursalDto);
     }
 
     @GetMapping("/{id}")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public SucursalDto.Get obtenerSucursal(@PathVariable Long id) {
         return new SucursalDto.Get(this.sucursalService.obtenerSucursal(id));
     }
 
     @PutMapping("/{id}")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public void actualizarSucursal(@PathVariable Long id, @Valid @RequestBody SucursalDto.Post sucursalDto) {
         this.sucursalService.actualizarSucursal(id, sucursalDto);
     }
 
     @GetMapping
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public Iterable<SucursalDto.Get> obtenerSucursales() {
         return this.sucursalService.obtenerSucursales();
     }
 
     @GetMapping("/{id}/solicitudes")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public List<SolicitudDto.GET> getSucursales(@PathVariable Long id) {
         return this.sucursalService.obtenerSolicitudes(id).stream().map(SolicitudDto.GET::new).toList();
     }
 
     @GetMapping("/{id}/ventas")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
     public List<VentaDto.GetConSucursal> obtenerVentas(@PathVariable Long id) {
         return this.sucursalService.obtenerVentas(id);
     }
 
     @PostMapping("/{id}/ventas")
     @ResponseStatus(HttpStatus.CREATED)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR})
     public void crearVenta(@PathVariable Long id, @Valid @RequestBody VentaDto.Post ventaDto) throws HttpException {
         this.sucursalService.crearVenta(id, ventaDto);
     }

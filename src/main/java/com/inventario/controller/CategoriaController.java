@@ -18,6 +18,8 @@ import com.inventario.dto.ProductoDto;
 import com.inventario.models.Categoria;
 import com.inventario.services.CategoriaService;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import com.inventario.security.ValidateToken;
+import com.inventario.security.SystemRoles;
 
 
 @RestController
@@ -28,22 +30,19 @@ public class CategoriaController {
     private CategoriaService categoriaService;
 
     @GetMapping
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public List<CategoriaDto.GET> listar() {
         return categoriaService.obtenerCategorias().stream().map(CategoriaDto.GET::new).toList();
     }
 
     @GetMapping("/{id}")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public CategoriaDto.GET obtener(@PathVariable Long id) {
         return new CategoriaDto.GET(categoriaService.obtenerCategoria(id));
     }
 
     @PostMapping
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public CategoriaDto.GET crear(@Valid @RequestBody CategoriaDto.POST dto) {
         Categoria c = new Categoria(dto.getNombre());
         c.setDescripcion(dto.getDescripcion());
@@ -52,16 +51,14 @@ public class CategoriaController {
     }
 
     @DeleteMapping("/{id}")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.ADMINISTRADOR})
     public void eliminar(@PathVariable Long id) {
         categoriaService.eliminarCategoria(id);
     }
 
     @GetMapping("/{id}/productos")
     @ResponseStatus(HttpStatus.OK)
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public List<ProductoDto.Get> obtenerProductos(@PathVariable Long id) {
         return categoriaService.obtenerProductos(id);
     }

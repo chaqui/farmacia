@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.inventario.security.ValidateToken;
+import com.inventario.security.SystemRoles;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,8 +34,7 @@ public class PhotoController {
     }
 
     @PostMapping(value = "/upload", consumes = {"multipart/form-data"})
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
         try {
             String storedPath = photoService.store(file);
@@ -45,8 +46,7 @@ public class PhotoController {
     }
 
     @GetMapping("/download")
-    // Ejemplo de autorización:
-    // @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public ResponseEntity<Resource> download(@RequestParam(name = "path", required = false) String path) {
         System.out.println("@@@ ENDPOINT DOWNLOAD LLAMADO - path: " + path);
         log.warn("@@@ ENDPOINT DOWNLOAD LLAMADO - path: " + path);

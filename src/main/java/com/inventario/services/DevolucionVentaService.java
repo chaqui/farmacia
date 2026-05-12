@@ -13,6 +13,7 @@ import com.inventario.models.DetalleDevolucionVenta;
 import com.inventario.models.DetalleVenta;
 import com.inventario.models.DevolucionVenta;
 import com.inventario.models.Venta;
+import com.inventario.dto.DetalleDevolucionDto;
 import com.inventario.repository.DevolucionVentaRepository;
 import com.inventario.repository.DetalleVentaRepository;
 import com.inventario.repository.VentaRepository;
@@ -52,7 +53,7 @@ public class DevolucionVentaService {
         devolucion.setVenta(venta);
 
         // Agregar detalles
-        for (DevolucionVentaDto.Post.DetallePost detalleDto : devolucionDto.getDetalles()) {
+        for (DetalleDevolucionDto.Post detalleDto : devolucionDto.getDetalles()) {
             DetalleVenta detalleVentaOriginal = detalleVentaRepository
                     .findById(detalleDto.getDetalleVentaId())
                     .orElseThrow(() -> new HttpException("Detalle de venta no encontrado", 404));
