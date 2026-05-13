@@ -7,7 +7,7 @@
     <!-- Autenticación para GitHub Packages (paquete privado service-auto-register-client) -->
     <server>
       <id>github-chaqui</id>
-      <username>x-access-token</username>
+      <username>${env.GITHUB_ACTOR}</username>
       <password>${env.PAT}</password>
     </server>
   </servers>
