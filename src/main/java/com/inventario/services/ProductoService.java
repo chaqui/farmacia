@@ -104,6 +104,7 @@ public class ProductoService {
             throw new HttpException("El porcentaje de descuento no puede ser mayor al de ganancia", 400);
     }
 
+    @Transactional
     public List<ProductoDto.Get> obtenerProductos() {
         return productoRepository.findAll().stream().map(ProductoDto.Get::new).collect(Collectors.toList());
     }

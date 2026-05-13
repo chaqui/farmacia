@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Data
@@ -39,9 +40,11 @@ public class Lote {
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "lote")
     private List<DetalleVenta> detallesVenta;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "lote")
     private List<DetalleCompra> detallesCompra;
 

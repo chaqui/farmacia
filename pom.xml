@@ -127,6 +127,15 @@
     </dependency>
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>github-chaqui</id>
+      <url>https://maven.pkg.github.com/chaqui/*</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+  </repositories>
+
   <build>
     <plugins>
       <plugin>
