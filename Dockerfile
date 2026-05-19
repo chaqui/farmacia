@@ -22,6 +22,8 @@ RUN mkdir -p /app/db /app/uploads/photos && \
 # El JAR es copiado desde el contexto (compilado en CI)
 COPY --chown=appuser:appuser target/*.jar app.jar
 
+ENV SPRING_PROFILES_ACTIVE=prod
+
 USER appuser
 
 EXPOSE 8085
