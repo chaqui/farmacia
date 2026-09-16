@@ -2,6 +2,7 @@ package com.inventario.models;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 import com.inventario.dto.ProductoDto;
@@ -56,21 +57,11 @@ public class Producto {
     private String bodega;
 
     @ManyToMany
-    @JoinTable(
-        name = "producto_categoria",
-        joinColumns = @JoinColumn(name = "producto_id"),
-        inverseJoinColumns = @JoinColumn(name = "categoria_id")
-    )
+    @JoinTable(name = "producto_categoria", joinColumns = @JoinColumn(name = "producto_id"), inverseJoinColumns = @JoinColumn(name = "categoria_id"))
     private List<Categoria> categorias = new ArrayList<>();
 
-
-
-    @Column 
+    @Column
     private Integer cantidadMinima;
-
-    @ManyToOne
-    @JoinColumn(name = "proveedor_id", nullable = false)
-    private Proveedor proveedor;
 
     @ManyToOne
     @JoinColumn(name = "marca_id", nullable = true)
@@ -85,17 +76,12 @@ public class Producto {
     private List<Fotografia> fotografias = new ArrayList<>();
 
     @ManyToMany
-    @JoinTable(
-        name = "producto_relacionados",
-        joinColumns = @JoinColumn(name = "producto_id"),
-        inverseJoinColumns = @JoinColumn(name = "relacionado_id")
-    )
+    @JoinTable(name = "producto_relacionados", joinColumns = @JoinColumn(name = "producto_id"), inverseJoinColumns = @JoinColumn(name = "relacionado_id"))
     private List<Producto> relacionados = new ArrayList<>();
 
-    public Producto(ProductoDto.Post dto, Proveedor proveedor) {
+    public Producto(ProductoDto.Post dto) {
         this.nombre = dto.getNombre();
         this.descripcion = dto.getDescripcion();
-        this.proveedor = proveedor;
         this.codigo = dto.getCodigo();
         this.porcentajeDescuento = dto.getPorcentajeDescuento();
         this.porcentajeGanancia = dto.getPorcentajeGanancia();
@@ -120,5 +106,12 @@ public class Producto {
 
     public void agregarCategoria(Categoria categoria) {
         this.categorias.add(categoria);
+    }
+
+    public List<String> nombreProveedores() {
+        return this.lotes.stream()
+                .flatMap(lote -> lote.proveedores().stream())
+                .distinct()
+                .toList();
     }
 }

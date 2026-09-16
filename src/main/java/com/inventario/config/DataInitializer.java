@@ -86,7 +86,6 @@ public class DataInitializer implements CommandLineRunner {
             Producto p = new Producto();
             p.setNombre("Herramienta Mecánica " + i);
             p.setDescripcion(generateDescripcion(i));
-            p.setProveedor(proveedor);
             p.agregarCategoria(mecanica);
             // sample location fields moved to Producto
             p.setEstanteria("A" + (i % 10));

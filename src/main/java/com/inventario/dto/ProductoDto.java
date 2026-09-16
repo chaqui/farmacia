@@ -70,7 +70,7 @@ public class ProductoDto {
     public static class Get extends Post {
         private Long id;
         private Long stock;
-        private String proveedor;
+        private List<String> proveedores;
         private String marca;
 
         public Get(Producto producto) {
@@ -79,7 +79,7 @@ public class ProductoDto {
             this.descripcion = producto.getDescripcion();
             this.stock = producto.getCantidad();
             this.fotografias = producto.getFotografias().stream().map(f -> f.getUrl()).toList();
-            this.proveedor = producto.getProveedor().getNombre();
+            this.proveedores = producto.nombreProveedores();
             this.marca = producto.getMarca() != null ? producto.getMarca().getNombre() : null;
             this.marcaId = producto.getMarca() != null ? producto.getMarca().getId() : null;
             this.codigo = producto.getCodigo();

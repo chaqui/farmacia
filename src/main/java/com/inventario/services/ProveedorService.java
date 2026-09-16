@@ -83,16 +83,7 @@ public class ProveedorService {
         return proveedorRepository.findAll();
     }
 
-    /**
-     * Agrega un producto a un proveedor
-     * @param id id del proveedor
-     * @param productoDto datos del producto
-     * @throws HttpException si el proveedor no existe
-     */
-    public void agregarProducto(Long id, Post productoDto) throws HttpException {
-        Proveedor proveedor = this.obtenerProveedor(id);
-        productoService.crearProducto(productoDto, proveedor);
-    }
+
 
     /**
      * Elimina un proveedor

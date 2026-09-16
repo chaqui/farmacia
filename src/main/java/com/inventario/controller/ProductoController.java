@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import com.inventario.dto.ProductoDto;
 import com.inventario.exception.HttpException;
 import com.inventario.services.ProductoService;
 
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
@@ -93,6 +95,12 @@ public class ProductoController {
     public void actualizarUbicacion(@PathVariable Long id, @RequestBody ProductoDto.UbicacionDto ubicacion)
             throws HttpException {
         this.productoService.actualizarUbicacion(id, ubicacion);
+    }
+
+    @PostMapping()
+    @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    public void agregarProducto(@PathVariable Long id, @Valid @RequestBody ProductoDto.Post productoDto) throws HttpException {
+        this.productoService.crearProducto(productoDto);
     }
 
 

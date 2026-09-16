@@ -35,4 +35,8 @@ public class DetalleCompra extends Detalle {
     public Float getSubtotal() {
         return lote.getPrecio() * cantidad;
     }
+
+    public String nombreProveedor(){
+        return this.getCompra().getProveedor().getNombre();
+    }
 }

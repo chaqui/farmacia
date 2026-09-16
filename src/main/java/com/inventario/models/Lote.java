@@ -3,6 +3,7 @@ package com.inventario.models;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.inventario.dto.LoteDto;
 
@@ -72,5 +73,12 @@ public class Lote {
                 .sum();
 
         return totalComprado - totalVendido;
+    }
+
+    public List<String> proveedores() {
+        return this.detallesCompra.stream()
+                .map(DetalleCompra::nombreProveedor)
+                .distinct()
+                .toList();
     }
 }

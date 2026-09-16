@@ -53,12 +53,7 @@ public class ProveedorController {
         return new ProveedorDto.GET(proveedorService.obtenerProveedor(id));
     }
 
-    @PostMapping("/{id}/productos")
-    @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
-    public void agregarProducto(@PathVariable Long id, @Valid @RequestBody ProductoDto.Post productoDto) throws HttpException {
-        proveedorService.agregarProducto(id, productoDto);
-    }
-
+ 
     @GetMapping("/{id}/productos")
     @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public List<ProductoDto.Get> obtenerProductos(@PathVariable Long id) throws HttpException {

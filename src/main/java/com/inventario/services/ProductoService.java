@@ -7,13 +7,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.inventario.dto.LoteDto;
+
 import com.inventario.dto.ProductoDto;
 import com.inventario.exception.HttpException;
 import com.inventario.models.Fotografia;
 import com.inventario.models.Lote;
 import com.inventario.models.Producto;
-import com.inventario.models.Proveedor;
 import com.inventario.models.Marca;
 import com.inventario.repository.ProductoRepository;
 import com.inventario.repository.MarcaRepository;
@@ -35,13 +34,13 @@ public class ProductoService {
     }
 
     @Transactional
-    public void crearProducto(ProductoDto.Post productoDto, Proveedor proveedor) throws HttpException {
+    public void crearProducto(ProductoDto.Post productoDto) throws HttpException {
         // validar porcentajes si se enviaron
         Float pd = productoDto.getPorcentajeDescuento();
         Float pg = productoDto.getPorcentajeGanancia();
 
         this.validarPorcentajes(pd, pg);
-        Producto producto = new Producto(productoDto, proveedor);
+        Producto producto = new Producto(productoDto);
         
         // Establecer marca si se proporciona
         if (productoDto.getMarcaId() != null) {
