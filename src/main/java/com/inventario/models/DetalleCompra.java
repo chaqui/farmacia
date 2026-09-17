@@ -38,5 +38,10 @@ public class DetalleCompra extends Detalle {
 
     public String nombreProveedor(){
         return this.getCompra().getProveedor().getNombre();
+        
+    }
+
+    public Producto getProducto(){
+        return this.lote.getProducto();
     }
 }

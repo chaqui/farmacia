@@ -71,7 +71,7 @@ public class ProductoServiceTest {
         });
 
         try {
-            productoService.crearProducto(dto, proveedor);
+            productoService.crearProducto(dto);
         } catch (HttpException e) {
             e.printStackTrace();
         }
@@ -84,7 +84,6 @@ public class ProductoServiceTest {
         Producto saved = savedList.get(savedList.size() - 1);
 
         assertEquals("TestProd", saved.getNombre());
-        assertEquals(proveedor, saved.getProveedor());
         assertTrue(saved.getFotografias().stream().anyMatch(f -> "http://img/1".equals(((Fotografia) f).getUrl())));
         assertTrue(saved.getRelacionados().stream().anyMatch(p -> p.getId().equals(2L)));
         assertTrue(saved.getCategorias().stream().anyMatch(c -> "Existente".equals(c.getNombre())));

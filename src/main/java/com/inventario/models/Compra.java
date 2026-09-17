@@ -48,4 +48,11 @@ public class Compra {
         }
         return total;
     }
+
+    public List<Producto> productos(){
+          return this.detalleCompra.stream()
+                .map(DetalleCompra::getProducto)
+                .distinct()
+                .toList();
+    }
 }

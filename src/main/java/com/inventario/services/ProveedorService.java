@@ -12,6 +12,8 @@ import com.inventario.dto.MarcaDto;
 import com.inventario.dto.ProductoDto.Post;
 import com.inventario.exception.HttpException;
 import com.inventario.models.Proveedor;
+import com.inventario.models.Compra;
+import com.inventario.models.DetalleCompra;
 import com.inventario.models.Marca;
 import com.inventario.repository.ProveedorRepository;
 import com.inventario.repository.MarcaRepository;
@@ -30,12 +32,13 @@ public class ProveedorService {
 
     /**
      * Crea un proveedor
+     * 
      * @param proveedorDto datos del proveedor
      * @throws HttpException si alguna marca no existe
      */
     public void crearProveedor(ProveedorDto.POST proveedorDto) throws HttpException {
         Proveedor proveedor = new Proveedor(proveedorDto);
-        
+
         // Asignar marcas si se proporcionan
         if (proveedorDto.getMarcaIds() != null && !proveedorDto.getMarcaIds().isEmpty()) {
             for (Integer marcaId : proveedorDto.getMarcaIds()) {
@@ -44,13 +47,14 @@ public class ProveedorService {
                 proveedor.getMarcas().add(marca);
             }
         }
-        
+
         proveedorRepository.save(proveedor);
     }
 
     /**
      * Actualiza un proveedor
-     * @param id id del proveedor
+     * 
+     * @param id           id del proveedor
      * @param proveedorDto datos del proveedor
      * @throws HttpException si el proveedor no existe
      */
@@ -63,6 +67,7 @@ public class ProveedorService {
 
     /**
      * Obtiene un proveedor
+     * 
      * @param id id del proveedor
      * @return proveedor
      * @throws HttpException si el proveedor no existe
@@ -77,16 +82,16 @@ public class ProveedorService {
 
     /**
      * Obtiene todos los proveedores
+     * 
      * @return lista de proveedores
      */
     public List<Proveedor> obtenerProveedores() {
         return proveedorRepository.findAll();
     }
 
-
-
     /**
      * Elimina un proveedor
+     * 
      * @param id id del proveedor
      */
     public void eliminarProveedor(Long id) {
@@ -95,17 +100,24 @@ public class ProveedorService {
 
     /**
      * Obtiene los productos de un proveedor
+     * 
      * @param id id del proveedor
      * @return lista de productos
      * @throws HttpException si el proveedor no existe
      */
     public List<ProductoDto.Get> obtenerProductos(Long id) throws HttpException {
         Proveedor proveedor = this.obtenerProveedor(id);
-        return proveedor.getProductos().stream().map(ProductoDto.Get::new).collect(Collectors.toList());
+        List<Compra> compras = proveedor.getCompras();
+        return compras.stream()
+                .flatMap(compra -> compra.productos().stream())
+                .distinct()
+                .map(ProductoDto.Get::new)
+                .toList();
     }
 
     /**
      * Obtiene las marcas de un proveedor
+     * 
      * @param id id del proveedor
      * @return lista de marcas
      * @throws HttpException si el proveedor no existe
@@ -125,8 +137,9 @@ public class ProveedorService {
 
     /**
      * Asigna una marca a un proveedor
+     * 
      * @param proveedorId id del proveedor
-     * @param marcaId id de la marca
+     * @param marcaId     id de la marca
      * @throws HttpException si el proveedor o la marca no existen
      */
     public void asignarMarcaAProveedor(Long proveedorId, Integer marcaId) throws HttpException {
@@ -142,8 +155,9 @@ public class ProveedorService {
 
     /**
      * Remueve una marca de un proveedor
+     * 
      * @param proveedorId id del proveedor
-     * @param marcaId id de la marca
+     * @param marcaId     id de la marca
      * @throws HttpException si el proveedor o la marca no existen
      */
     public void removerMarcaDeProveedor(Long proveedorId, Integer marcaId) throws HttpException {

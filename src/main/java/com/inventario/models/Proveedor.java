@@ -43,7 +43,7 @@ public class Proveedor {
     private String contacto;
 
     @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Producto> productos;
+    private List<Compra> compras;
 
     @ManyToMany
     @JoinTable(
