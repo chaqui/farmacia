@@ -1,5 +1,6 @@
 package com.inventario.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.inventario.dto.SolicitudDto;
 import com.inventario.dto.SucursalDto;
@@ -21,6 +24,7 @@ import com.inventario.exception.HttpException;
 import com.inventario.services.SucursalService;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import com.inventario.security.ValidateToken;
 import com.inventario.security.SystemRoles;
 
@@ -72,8 +76,18 @@ public class SucursalController {
 
     @GetMapping("/{id}/ventas")
     @ValidateToken(roles = {SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
-    public List<VentaDto.GetConSucursal> obtenerVentas(@PathVariable Long id) {
-        return this.sucursalService.obtenerVentas(id);
+    public List<VentaDto.GetConSucursal> obtenerVentas(
+            @PathVariable Long id,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta) {
+        if (desde == null && hasta == null) {
+            return this.sucursalService.obtenerVentas(id);
+        }
+        if (desde == null || hasta == null || desde.isAfter(hasta)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Los parámetros desde y hasta son obligatorios y deben formar un rango válido");
+        }
+        return this.sucursalService.obtenerVentas(id, desde, hasta);
     }
 
     @PostMapping("/{id}/ventas")

@@ -1,5 +1,6 @@
 package com.inventario.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -56,6 +57,10 @@ public class SucursalService {
     public List<VentaDto.GetConSucursal> obtenerVentas(Long id) {
         Sucursal sucursal = this.obtenerSucursal(id);
         return sucursal.getVentas().stream().map(VentaDto.GetConSucursal::new).toList();
+    }
+
+    public List<VentaDto.GetConSucursal> obtenerVentas(Long id, LocalDate desde, LocalDate hasta) {
+        return this.ventaService.obtenerVentas(id, desde, hasta);
     }
 
     @Transactional(rollbackOn = Exception.class)

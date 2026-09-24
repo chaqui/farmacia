@@ -27,13 +27,16 @@ import com.inventario.security.ValidateToken;
 import com.inventario.security.SystemRoles;
 
 import java.util.List;
+import java.time.LocalDate;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @RestController
 @RequestMapping("/ventas")
@@ -62,8 +65,17 @@ public class VentaController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.ADMINISTRADOR})
-    public List<VentaDto.GetSinSucursal> obtenerVentas() {
-        return this.ventaService.obtenerVentas();
+    public List<VentaDto.GetSinSucursal> obtenerVentas(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta) {
+        if (desde == null && hasta == null) {
+            return this.ventaService.obtenerVentas();
+        }
+        if (desde == null || hasta == null || desde.isAfter(hasta)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Los parámetros desde y hasta son obligatorios y deben formar un rango válido");
+        }
+        return this.ventaService.obtenerVentas(desde, hasta);
     }
 
     /**

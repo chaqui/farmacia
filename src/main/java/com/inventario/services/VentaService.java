@@ -1,5 +1,6 @@
 package com.inventario.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -99,6 +100,21 @@ public class VentaService {
     public List<VentaDto.GetSinSucursal> obtenerVentas() {
         List<Venta> ventas = this.ventaRepository.findAll();
         return ventas.stream().map(VentaDto.GetSinSucursal::new).toList();
+    }
+
+    public List<VentaDto.GetSinSucursal> obtenerVentas(LocalDate desde, LocalDate hasta) {
+        return this.ventaRepository.findByFechaBetweenOrderByFechaDescIdDesc(desde, hasta)
+                .stream()
+                .map(VentaDto.GetSinSucursal::new)
+                .toList();
+    }
+
+    public List<VentaDto.GetConSucursal> obtenerVentas(Long sucursalId, LocalDate desde, LocalDate hasta) {
+        return this.ventaRepository
+                .findBySucursalIdAndFechaBetweenOrderByFechaDescIdDesc(sucursalId, desde, hasta)
+                .stream()
+                .map(VentaDto.GetConSucursal::new)
+                .toList();
     }
 
     @Transactional(rollbackOn = Exception.class)
