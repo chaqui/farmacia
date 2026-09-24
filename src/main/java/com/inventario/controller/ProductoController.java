@@ -70,7 +70,7 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}/lotes")
-    @ValidateToken(roles = {SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
+    @ValidateToken(roles = {SystemRoles.VENDEDOR, SystemRoles.CAJA, SystemRoles.COMPRAS, SystemRoles.ADMINISTRADOR})
     public List<LoteDto.GET> obtenerLotes(@PathVariable Long id) throws HttpException {
         log.info("Obteniendo lotes del producto con id: " + id);
         return this.productoService.obtenerLotes(id).stream().map(lote -> new LoteDto.GET(lote))
