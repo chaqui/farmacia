@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.inventario.constants.EstadoVenta;
+import com.inventario.constants.TipoPago;
 import com.inventario.models.Venta;
 
 import jakarta.validation.constraints.NotNull;
@@ -35,6 +36,9 @@ public class VentaDto {
         protected Integer clienteId;
 
         protected String nombreCliente;
+
+        @NotNull(message = "El tipo de pago es obligatorio")
+        protected TipoPago tipoPago;
 
         /**
          * Constructor para Ventas Sin Sucursal
@@ -73,6 +77,7 @@ public class VentaDto {
             this.estado = venta.getEstado();
             this.esCredito = venta.getEsCredito();
             this.montoCredito = venta.getMontoCredito();
+            this.tipoPago = venta.getTipoPago();
         }
     }
 
@@ -96,6 +101,7 @@ public class VentaDto {
             this.estado = venta.getEstado();
             this.esCredito = venta.getEsCredito();
             this.montoCredito = venta.getMontoCredito();
+            this.tipoPago = venta.getTipoPago();
             
         }
     }

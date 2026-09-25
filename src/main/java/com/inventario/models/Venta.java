@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.boot.autoconfigure.integration.IntegrationProperties.RSocket.Client;
 
 import com.inventario.constants.EstadoVenta;
+import com.inventario.constants.TipoPago;
 import com.inventario.dto.VentaDto;
 
 import java.util.ArrayList;
@@ -61,6 +62,10 @@ public class Venta {
         @Column(nullable = true)
         Float montoCredito;
 
+        @Enumerated(EnumType.STRING)
+        @Column(name = "tipo_pago", nullable = false)
+        TipoPago tipoPago;
+
         @ManyToOne
         @JoinColumn(name = "sucursal_id", nullable = true)
         Sucursal sucursal;
@@ -97,6 +102,7 @@ public class Venta {
                 this.fecha = ventaDto.getFecha();
                 this.cliente = cliente;
                 this.nombreCliente = cliente != null ? cliente.getNombre() : ventaDto.getNombreCliente();
+                this.tipoPago = ventaDto.getTipoPago();
                 this.estado = EstadoVenta.CREADA;
         }
 

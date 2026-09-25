@@ -80,6 +80,10 @@ public class TicketPdfService {
             Paragraph clienteP = new Paragraph("Cliente: " + cliente, fontSmall);
             document.add(clienteP);
 
+            Paragraph tipoPagoP = new Paragraph(
+                    "Pago: " + venta.getTipoPago().getDescripcion(), fontSmall);
+            document.add(tipoPagoP);
+
             document.add(new Paragraph(" "));
 
             // Tabla de detalles
